@@ -1,9 +1,0 @@
-{% extends 'centroonline/base.html' %}
-{% block content %}
-  <h2>Nuevo Pedido</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Añadir al pedido</button>
-  </form>
-{% endblock %}

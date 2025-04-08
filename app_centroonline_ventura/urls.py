@@ -21,17 +21,10 @@ urlpatterns = [
      path('vehiculos/<int:pk>/liberar/', LiberarVehiculoView.as_view(), name='liberar_vehiculo'),
 
     # Baguetería Ventura
-    path('producto/', views.ProductoListView.as_view(), name='producto_list'),
-    path('producto/<int:pk>/', views.ProductoDetailView.as_view(), name='producto_detail'),
-    path('producto/nuevo/', views.ProductoCreateView.as_view(), name='producto_create'),
-    path('producto/<int:pk>/editar/', views.ProductoUpdateView.as_view(), name='producto_edit'),
-    path('producto/<int:pk>/eliminar/', views.ProductoDeleteView.as_view(), name='producto_delete'),
-    
+    path('bagueteria/', views.ProductoListView.as_view(), name='menu_bagueteria'),
+    path('bagueteria/pedido/', views.PedidoCreateView.as_view(), name='nuevo_pedido'),
+    path('bagueteria/pedido/<int:pk>/', views.PedidoDetailView.as_view(), name='detalle_pedido'),
 
-
-    path('pedidos/', views.PedidoListView.as_view(), name='pedido_list'),
-    path('pedido/nuevo/', views.PedidoCreateView.as_view(), name='pedido_create'),
-    path('pedido/<int:pk>/eliminar/', views.PedidoDeleteView.as_view(), name='pedido_delete'),
     # Ventura Market
 
     path('market/', views.ProductoMarketListView.as_view(), name='productos_market'),

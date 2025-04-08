@@ -1,0 +1,431 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Menú Premium | Baguetería Ventura{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #e67e22;
+        --secondary-color: #e74c3c;
+        --dark-color: #2c3e50;
+        --light-color: #ecf0f1;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --info-color: #3498db;
+    }
+    
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 5rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .card-producto {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-producto:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    
+    .producto-img-container {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .producto-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .card-producto:hover .producto-img {
+        transform: scale(1.05);
+    }
+    
+    .badge-tipo {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .tradicional {
+        background-color: var(--warning-color);
+        color: var(--dark-color);
+    }
+    
+    .integral {
+        background-color: var(--success-color);
+        color: white;
+    }
+    
+    .sin-gluten {
+        background-color: #8e44ad;
+        color: white;
+    }
+    
+    .categoria-titulo {
+        position: relative;
+        margin: 3rem 0 1.5rem;
+        padding-bottom: 0.75rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    
+    .categoria-titulo:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+    
+    .btn-pedido {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    
+    .btn-pedido:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+    
+    .precio {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+    }
+    
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-text {
+        flex: 1;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-btn {
+        border-radius: 50px;
+        padding: 0.5rem 1.25rem;
+        margin: 0 0.5rem 0.5rem 0;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .floating-cart {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    
+    .floating-cart:hover {
+        transform: scale(1.1);
+    }
+    
+    .cart-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        position: relative;
+    }
+    
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--dark-color);
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    
+    .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .modal-header {
+        background-color: var(--dark-color);
+        color: white;
+        border-bottom: none;
+    }
+    
+    .btn-close {
+        filter: invert(1);
+    }
+    
+    .ingredientes-list {
+        list-style-type: none;
+        padding-left: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .ingredientes-list li {
+        background-color: var(--light-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        color: var(--dark-color);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 3rem 0;
+            border-radius: 0;
+        }
+        
+        .categoria-titulo {
+            margin: 2rem 0 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Baguetería Ventura</h1>
+        <p class="lead mb-4">Experiencias gastronómicas artesanales con los mejores ingredientes</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="#menu" class="btn btn-primary btn-lg px-4">Ver Menú</a>
+        </div>
+    </div>
+</section>
+
+<!-- Main Menu -->
+<div class="container" id="menu">
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap justify-content-center">
+                <a href="?tipo=" 
+                   class="filter-btn {% if not request.GET.tipo %}active{% endif %}">
+                   Todos
+                </a>
+                <a href="?tipo=TRADICIONAL" 
+                   class="filter-btn {% if request.GET.tipo == 'TRADICIONAL' %}active{% endif %}">
+                   Tradicional
+                </a>
+                <a href="?tipo=INTEGRAL" 
+                   class="filter-btn {% if request.GET.tipo == 'INTEGRAL' %}active{% endif %}">
+                   Integral
+                </a>
+                <a href="?tipo=SIN_GLUTEN" 
+                   class="filter-btn {% if request.GET.tipo == 'SIN_GLUTEN' %}active{% endif %}">
+                   Sin Gluten
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% regroup productos by categoria as categorias_list %}
+    
+    {% for categoria in categorias_list %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="categoria-titulo">{{ categoria.grouper.nombre }}</h2>
+            {% if categoria.grouper.descripcion %}
+            <p class="text-muted">{{ categoria.grouper.descripcion }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for producto in categoria.list %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card card-producto">
+                <div class="producto-img-container">
+                    <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
+                    <span class="badge-tipo {{ producto.tipo_pan|lower|cut:' ' }}">
+                        {{ producto.get_tipo_pan_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ producto.nombre }}</h5>
+                        <span class="precio">${{ producto.precio }}</span>
+                    </div>
+                    <p class="card-text">{{ producto.descripcion }}</p>
+                    
+                    {% if producto.ingredientes %}
+                    <ul class="ingredientes-list">
+                        {% for ingrediente in producto.ingredientes.splitlines %}
+                        <li>{{ ingrediente }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    
+                    <div class="mt-auto pt-3">
+                        <button class="btn btn-pedido w-100" data-bs-toggle="modal" 
+                                data-bs-target="#modalPedido{{ producto.id }}">
+                            <i class="fas fa-plus-circle me-2"></i>Añadir al pedido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para pedido -->
+        <div class="modal fade" id="modalPedido{{ producto.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Personalizar pedido</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{{ producto.imagen.url }}" class="rounded me-3" width="80" height="80" style="object-fit: cover;">
+                            <div>
+                                <h6 class="mb-1">{{ producto.nombre }}</h6>
+                                <p class="text-muted mb-0">${{ producto.precio }}</p>
+                            </div>
+                        </div>
+                        
+                        <form method="post" action="{% url 'nuevo_pedido' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                            
+                        
+                            
+                            <div class="mb-4">
+                                <label for="notas{{ producto.id }}" class="form-label fw-bold">Instrucciones especiales</label>
+                                <textarea class="form-control" id="notas{{ producto.id }}" 
+                                          name="notas" rows="3" placeholder="Ej: Sin mayonesa, extra de jamón..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                                <i class="fas fa-cart-plus me-2"></i>Añadir al pedido - $<span id="total{{ producto.id }}">{{ producto.precio }}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="alert alert-info">No hay productos disponibles con los filtros seleccionados.</div>
+        <a href="?tipo=" class="btn btn-primary">Ver todo el menú</a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Carrito flotante -->
+{% if user.is_authenticated %}
+<div class="floating-cart">
+    <a href="{% url 'nuevo_pedido' %}" class="cart-btn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count">{{ request.user.pedido_set.count }}</span>
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación para las cards
+    const cards = document.querySelectorAll('.card-producto');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transitionDelay = `${index * 0.1}s`;
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    });
+    
+    // Actualizar total en modal cuando cambia cantidad
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const productId = this.id.replace('cantidad', '');
+            const price = parseFloat('{{ producto.precio }}');
+            const quantity = parseInt(this.value) || 1;
+            document.getElementById('total' + productId).textContent = (price * quantity).toFixed(2);
+        });
+    });
+});
+
+function increment(id) {
+    const input = document.getElementById('cantidad' + id);
+    input.value = parseInt(input.value) + 1;
+    input.dispatchEvent(new Event('change'));
+}
+
+function decrement(id) {
+    const input = document.getElementById('cantidad' + id);
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+        input.dispatchEvent(new Event('change'));
+    }
+}
+</script>
+{% endblock %}

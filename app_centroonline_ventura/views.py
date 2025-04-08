@@ -163,65 +163,22 @@ class ReservaConfirmadaView(DetailView):
 # Vistas para Baguetería Ventura
 class ProductoListView(ListView):
     model = Producto
-    template_name = 'centroonline/bagueteria/producto_list.html'
+    template_name = 'centroonline/bagueteria/menu.html'
     context_object_name = 'productos'
 
-# Vista para ver un producto en detalle
-class ProductoDetailView(DetailView):
-    model = Producto
-    template_name = 'centroonline/bagueteria/producto_detail.html'
-    context_object_name = 'producto'
-
-# Vista para agregar un nuevo producto
-class ProductoCreateView(LoginRequiredMixin, CreateView):
-    model = Producto
-    template_name = 'centroonline/bagueteria/producto_form.html'
-    success_url = reverse_lazy('producto_list')
-    fields = ['nombre', 'descripcion', 'precio', 'imagen']
-
-# Vista para actualizar un producto
-class ProductoUpdateView(LoginRequiredMixin, UpdateView):
-    model = Producto
-    template_name = 'centroonline/bagueteria/producto_form.html'
-    success_url = reverse_lazy('producto_list')
-    fields = ['nombre', 'descripcion', 'precio', 'imagen']
-# Vista para eliminar un producto
-class ProductoDeleteView(LoginRequiredMixin, DeleteView):
-    model = Producto
-    template_name = 'centroonline/bagueteria/producto_confirm_delete.html'
-    success_url = reverse_lazy('producto_list')
-
-# Vista para ver los pedidos del usuario
-class PedidoListView(LoginRequiredMixin, ListView):
-    model = Pedido
-    template_name = 'centroonline/bagueteria/pedido_list.html'
-    context_object_name = 'pedidos'
-    
-    def get_queryset(self):
-        return Pedido.objects.filter(usuario=self.request.user)
-
-# Vista para agregar un nuevo pedido
 class PedidoCreateView(LoginRequiredMixin, CreateView):
     model = Pedido
-    template_name = 'centroonline/bagueteria/pedido_form.html'
-    
+    form_class = PedidoForm
+    template_name = 'centroonline/bagueteria/pedido.html'
+    success_url = reverse_lazy('menu_bagueteria')
+
     def form_valid(self, form):
         form.instance.usuario = self.request.user
         return super().form_valid(form)
 
-    success_url = reverse_lazy('pedido_list')
-
-# Vista para eliminar un pedido
-class PedidoDeleteView(LoginRequiredMixin, DeleteView):
+class PedidoDetailView(LoginRequiredMixin, DetailView):
     model = Pedido
-    template_name = 'centroonline/bagueteria/pedido_confirm_delete.html'
-    success_url = reverse_lazy('pedido_list')
-
-class ProductoDetailView(DetailView):
-    model = Producto
-    template_name = 'centroonline/bagueteria/producto_detail.html'  
-    context_object_name = 'producto'
-
+    template_name = 'centroonline/bagueteria/pedido_detalle.html'
 
 
 
