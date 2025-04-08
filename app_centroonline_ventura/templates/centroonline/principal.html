@@ -1,0 +1,48 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1>Bienvenido a Centro Online Ventura</h1>
+        <p class="lead">Tu centro comercial integral</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sección para Ventura Motors -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">🚗 Ventura Motors</h5>
+                <p class="card-text">Descubre vehículos nuevos y usados con garantía, asesoramiento personalizado y opciones de financiamiento adaptadas a tus necesidades.</p>
+                <a href="{% url 'listado' %}" class="btn btn-primary">Ver vehículos</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección para Baguetería Ventura -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">🥖 Baguetería Ventura</h5>
+                <p class="card-text">Disfruta de panes artesanales, bocadillos gourmet y postres caseros elaborados con ingredientes frescos y de calidad.</p>
+                <a href="{% url 'producto_list' %}" class="btn btn-primary">Ver menú</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección para Ventura Market -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">🛒 Ventura Market</h5>
+                <p class="card-text">Encuentra una amplia variedad de productos frescos, comestibles y artículos de limpieza, con atención personalizada y precios competitivos.</p>
+                <a href="{% url 'productos_market' %}" class="btn btn-primary">Ver productos</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

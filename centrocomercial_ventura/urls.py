@@ -1,0 +1,10 @@
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('app_centroonline_ventura.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+
+]

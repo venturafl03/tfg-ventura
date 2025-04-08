@@ -1,0 +1,201 @@
+{% extends 'centroonline/base.html' %}
+
+{% block content %}
+  <style>
+    /* Estilos para la página de productos */
+    .titulo-productos {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .producto-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .producto-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .producto-imagen {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+
+    .producto-info {
+      padding: 15px;
+    }
+
+    .producto-info h3 {
+      margin: 0;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .descripcion {
+      color: #666;
+      font-size: 0.9em;
+      margin: 10px 0;
+    }
+
+    .precio {
+      font-size: 1.2em;
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .acciones {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background-color: #f8f9fa;
+    }
+
+    .btn-ver-detalles,
+    .btn-editar,
+    .btn-eliminar {
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn-ver-detalles {
+      background-color: #007bff;
+    }
+
+    .btn-editar {
+      background-color: #ffc107;
+    }
+
+    .btn-eliminar {
+      background-color: #dc3545;
+    }
+
+    .btn-ver-detalles:hover,
+    .btn-editar:hover,
+    .btn-eliminar:hover {
+      opacity: 0.8;
+    }
+
+    .boton-agregar {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .btn-agregar {
+      padding: 12px 30px;
+      background-color: #28a745;
+      color: white;
+      font-size: 1.2em;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn-agregar:hover {
+      background-color: #218838;
+    }
+  </style>
+
+  <h2 class="titulo-productos">Productos</h2>
+
+  <div class="productos">
+    {% for producto in productos %}
+      <div class="producto-card">
+        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="producto-imagen">
+        
+        <div class="producto-info">
+          <h3>{{ producto.nombre }}</h3>
+          <p class="descripcion">{{ producto.descripcion|truncatewords:20 }}</p>
+          <p class="precio">${{ producto.precio }}</p>
+        </div>
+        
+        <div class="acciones">
+          <a href="{% url 'producto_detail' producto.pk %}" class="btn-ver-detalles">Ver detalles</a>
+          <a href="{% url 'producto_edit' producto.pk %}" class="btn-editar">Editar</a>
+          <button class="btn-eliminar" data-producto-id="{{ producto.pk }}">Eliminar</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div class="boton-agregar">
+    <a href="{% url 'producto_create' %}" class="btn-agregar">Añadir nuevo producto</a>
+  </div>
+
+  <!-- SweetAlert para la eliminación -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Eliminar producto con SweetAlert
+    document.querySelectorAll('.btn-eliminar').forEach(button => {
+      button.addEventListener('click', function(e) {
+        const productoId = e.target.dataset.productoId;
+        
+        Swal.fire({
+          title: '¿Estás seguro?',
+          text: 'Este producto será eliminado permanentemente.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Realizar la solicitud DELETE
+            fetch(`/producto/${productoId}/eliminar/`, {
+              method: 'DELETE',
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',  // Importante para procesar la solicitud de manera adecuada
+                'X-CSRFToken': '{{ csrf_token }}',  // Necesario para evitar errores de CSRF
+              }
+            })
+            .then(response => {
+              if (response.ok) {
+                Swal.fire(
+                  'Eliminado!',
+                  'El producto ha sido eliminado.',
+                  'success'
+                ).then(() => {
+                  location.reload();  // Recargar la página para ver los cambios
+                });
+              } else {
+                Swal.fire(
+                  'Error!',
+                  'Hubo un problema al eliminar el producto.',
+                  'error'
+                );
+              }
+            })
+            .catch(error => {
+              Swal.fire(
+                'Error!',
+                'Hubo un problema con la solicitud.',
+                'error'
+              );
+            });
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

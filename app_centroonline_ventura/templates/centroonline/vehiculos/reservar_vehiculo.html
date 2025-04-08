@@ -1,0 +1,60 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Reservar Vehículo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3>Reservar {{ vehiculo.marca }} {{ vehiculo.modelo }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.correo.label_tag }}
+                        {{ form.correo }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.telefono.label_tag }}
+                        {{ form.telefono }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.direccion.label_tag }}
+                        {{ form.direccion }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form.fecha_inicio.label_tag }}
+                        {{ form.fecha_inicio }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.fecha_fin.label_tag }}
+                        {{ form.fecha_fin }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.comentarios.label_tag }}
+                    {{ form.comentarios }}
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'detalle_vehiculo' vehiculo.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Confirmar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

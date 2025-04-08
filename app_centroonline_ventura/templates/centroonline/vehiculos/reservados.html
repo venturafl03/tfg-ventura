@@ -1,0 +1,35 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Vehículos Reservados{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Vehículos Reservados</h2>
+    
+    <div class="row g-4">
+        {% for vehiculo in vehiculos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ vehiculo.imagen_principal.url }}" class="card-img-top" alt="{{ vehiculo.marca }} {{ vehiculo.modelo }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehiculo.marca }} {{ vehiculo.modelo }}</h5>
+                    <p class="card-text">
+                        <strong>Reservado por:</strong> {{ vehiculo.reservado_por.username }}<br>
+                        <strong>Fecha reserva:</strong> {{ vehiculo.fecha_reserva|date:"d/m/Y H:i" }}
+                    </p>
+                    <a href="{% url 'detalle_vehiculo' vehiculo.pk %}" class="btn btn-primary">
+                        Ver detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No hay vehículos reservados actualmente.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

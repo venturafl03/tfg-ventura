@@ -1,0 +1,16 @@
+{% extends 'centroonline/base.html' %}
+{% block content %}
+  <h2>Mis Pedidos</h2>
+  <div class="pedidos">
+    {% for pedido in pedidos %}
+      <div class="pedido-card">
+        <h3>{{ pedido.producto.nombre }}</h3>
+        <p>Cantidad: {{ pedido.cantidad }}</p>
+        <p>Total: ${{ pedido.total }}</p>
+        <p>Notas: {{ pedido.notas }}</p>
+        <a href="{% url 'pedido_delete' pedido.pk %}">Eliminar</a>
+      </div>
+    {% endfor %}
+  </div>
+  <a href="{% url 'pedido_create' %}">Hacer un nuevo pedido</a>
+{% endblock %}

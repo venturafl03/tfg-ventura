@@ -1,0 +1,59 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}{{ vehiculo.marca }} {{ vehiculo.modelo }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div id="carouselVehiculo" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{{ vehiculo.imagen_principal.url }}" class="d-block w-100" alt="{{ vehiculo.marca }} {{ vehiculo.modelo }}">
+                </div>
+                {% for imagen in vehiculo.imagenes.all %}
+                <div class="carousel-item">
+                    <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="Imagen {{ forloop.counter }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselVehiculo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselVehiculo" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2>{{ vehiculo.marca }} {{ vehiculo.modelo }} {{ vehiculo.año }}</h2>
+        <h4 class="text-success">${{ vehiculo.precio|floatformat:2 }}</h4>
+        
+        <div class="mt-4">
+            <h5>Especificaciones</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Tipo:</strong> {{ vehiculo.get_tipo_display }}</li>
+                <li class="list-group-item"><strong>Transmisión:</strong> {{ vehiculo.get_transmision_display }}</li>
+                <li class="list-group-item"><strong>Motor:</strong> {{ vehiculo.motor }}</li>
+                <li class="list-group-item"><strong>Potencia:</strong> {{ vehiculo.potencia }} HP</li>
+                <li class="list-group-item"><strong>Kilometraje:</strong> {{ vehiculo.kilometraje|floatformat:0 }} km</li>
+                <li class="list-group-item"><strong>Color:</strong> {{ vehiculo.color }}</li>
+            </ul>
+        </div>
+        
+        <div class="mt-4">
+            <h5>Descripción</h5>
+            <p>{{ vehiculo.descripcion }}</p>
+        </div>
+        
+        <div class="mt-4">
+            {% if user.is_authenticated %}
+            <a href="{% url 'test_drive' vehiculo.pk %}" class="btn btn-warning btn-lg">Solicitar Prueba de Manejo</a>
+            {% else %}
+            <a href="{% url 'login' %}?next={% url 'test_drive' vehiculo.pk %}" class="btn btn-warning btn-lg">Inicia sesión para probar</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

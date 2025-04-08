@@ -1,0 +1,178 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Vehículos Disponibles{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-primary">
+                <i class="bi bi-car-front"></i> Nuestro Catálogo
+            </h2>
+            <p class="text-muted">Explora nuestra selección de vehículos</p>
+        </div>
+        <div class="col-md-4">
+            <form method="get" class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por marca, modelo...">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for vehiculo in vehiculos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm {% if vehiculo.reservado %}border-warning{% else %}border-0{% endif %}">
+                <!-- Estado de reserva visible para todos -->
+                <div class="position-relative">
+                    <img src="{{ vehiculo.imagen_principal.url }}" 
+                         class="card-img-top img-fluid" 
+                         alt="{{ vehiculo.marca }} {{ vehiculo.modelo }}"
+                         style="height: 200px; object-fit: cover;">
+                    
+                    <!-- Badge de estado -->
+                    <span class="position-absolute top-0 start-0 m-2 badge 
+                                {% if vehiculo.reservado %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                        {% if vehiculo.reservado %}
+                        <i class="bi bi-lock-fill"></i> RESERVADO
+                        {% else %}
+                        <i class="bi bi-check-circle-fill"></i> DISPONIBLE
+                        {% endif %}
+                    </span>
+                    
+                    {% if vehiculo.destacado %}
+                    <span class="position-absolute top-0 end-0 m-2 badge bg-danger">
+                        <i class="bi bi-star-fill"></i> DESTACADO
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold">
+                            {{ vehiculo.marca }} {{ vehiculo.modelo }}
+                            <small class="text-muted">({{ vehiculo.año }})</small>
+                        </h5>
+                        <span class="badge bg-info">{{ vehiculo.get_tipo_display }}</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-primary mb-0">${{ vehiculo.precio|floatformat:2 }}</h4>
+                        <small class="text-muted">
+                            <i class="bi bi-speedometer2"></i> {{ vehiculo.kilometraje }} km
+                        </small>
+                    </div>
+                    
+                    <!-- Info de reserva visible - Punto 3 integrado aquí -->
+                    {% if vehiculo.reservado %}
+                    <div class="alert alert-warning py-2 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <div>
+                                <small>
+                                    <strong>Reservado:</strong> 
+                                    Desde {{ vehiculo.fecha_reserva|date:"d/m/Y" }}
+                                    {% if reserva_activa %}
+                                    hasta {{ reserva_activa.fecha_fin|date:"d/m/Y" }}
+                                    {% endif %}
+                                </small>
+                                {% if user.is_staff %}
+                                <br>
+                                <small>
+                                    <strong>Cliente:</strong> 
+                                    {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}
+                                    {% if reserva_activa.telefono %}
+                                    · Tel: {{ reserva_activa.telefono }}
+                                    {% endif %}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer bg-white border-0 pt-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'detalle_vehiculo' vehiculo.pk %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye-fill"></i> Ver detalles
+                        </a>
+                        
+                        {% if user.is_authenticated %}
+                            {% if vehiculo.reservado %}
+                                {% if user.is_staff %}
+                                <button class="btn btn-warning btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#liberarModal{{ vehiculo.pk }}">
+                                    <i class="bi bi-unlock-fill"></i> Liberar
+                                </button>
+                                {% endif %}
+                            {% else %}
+                            <a href="{% url 'reservar_vehiculo' vehiculo.pk %}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="bi bi-bookmark-check-fill"></i> Reservar
+                            </a>
+                            {% endif %}
+                        {% else %}
+                        <a href="{% url 'login' %}?next={% url 'detalle_vehiculo' vehiculo.pk %}" 
+                           class="btn btn-primary btn-sm">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión para reservar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal para liberar (solo staff) -->
+            {% if user.is_staff and vehiculo.reservado %}
+            <div class="modal fade" id="liberarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title">Confirmar liberación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Liberar este vehículo reservado?</p>
+                            <div class="alert alert-light">
+                                <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
+                                <strong>Cliente:</strong> {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}<br>
+                                <strong>Periodo:</strong> {{ vehiculo.fecha_reserva|date:"d/m/Y" }} - {{ reserva_activa.fecha_fin|date:"d/m/Y" }}<br>
+                                {% if reserva_activa.telefono %}
+                                <strong>Teléfono:</strong> {{ reserva_activa.telefono }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <form method="post" action="{% url 'liberar_vehiculo' vehiculo.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-unlock-fill"></i> Confirmar liberación
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                    <div>
+                        <h5 class="alert-heading">No hay vehículos disponibles</h5>
+                        <p>Intenta con otros criterios de búsqueda</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
