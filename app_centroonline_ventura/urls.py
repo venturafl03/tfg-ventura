@@ -26,10 +26,8 @@ urlpatterns = [
     path('bagueteria/pedido/<int:pk>/', views.PedidoDetailView.as_view(), name='detalle_pedido'),
 
     # Ventura Market
-
-    path('market/', views.ProductoMarketListView.as_view(), name='productos_market'),
+    path('market/', views.ProductoMarketListView.as_view(), name='market'),
     path('producto/<int:pk>/', views.DetalleProductoView.as_view(), name='detalle_producto'),
-
     # Home Build
     path('construccion/', views.ProyectoConstruccionListView.as_view(), name='proyectos'),
 
