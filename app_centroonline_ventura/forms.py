@@ -46,3 +46,4 @@ class ReservaForm(forms.ModelForm):
             'fecha_fin': 'Fecha de fin de reserva',
             'comentarios': 'Comentarios adicionales',
         }
+

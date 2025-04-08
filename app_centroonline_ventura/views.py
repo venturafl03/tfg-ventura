@@ -232,10 +232,10 @@ class ProductoMarketListView(ListView):
     context_object_name = 'productos'
 
 class DetalleProductoView(DetailView):
-    model = Producto
+    model = ProductoMarket  # Asegúrate de que esté apuntando a ProductoMarket
     template_name = 'centroonline/market/detalle_producto.html'
-    context_object_name = 'producto'
-
+    context_object_name = 'producto' 
+    
 # Vistas para Home Build
 class ProyectoConstruccionListView(ListView):
     model = ProyectoConstruccion

@@ -28,11 +28,12 @@ urlpatterns = [
     path('producto/<int:pk>/eliminar/', views.ProductoDeleteView.as_view(), name='producto_delete'),
     
 
-    
+
     path('pedidos/', views.PedidoListView.as_view(), name='pedido_list'),
     path('pedido/nuevo/', views.PedidoCreateView.as_view(), name='pedido_create'),
     path('pedido/<int:pk>/eliminar/', views.PedidoDeleteView.as_view(), name='pedido_delete'),
     # Ventura Market
+
     path('market/', views.ProductoMarketListView.as_view(), name='productos_market'),
     path('producto/<int:pk>/', views.DetalleProductoView.as_view(), name='detalle_producto'),
 
