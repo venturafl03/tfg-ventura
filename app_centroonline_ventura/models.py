@@ -7,6 +7,7 @@ from django.utils import timezone
 
 class Usuario(AbstractUser):
     telefono = models.CharField(max_length=20, blank=True)
+    
 
 class Vehiculo(models.Model):
     TIPO_VEHICULO_CHOICES = [

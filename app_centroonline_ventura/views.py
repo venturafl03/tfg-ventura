@@ -26,11 +26,12 @@ def principal(request):
     return render(request, 'centroonline/principal.html')
 
 
-class RegistroView(CreateView):
-      form_class = RegistroForm
-      template_name = 'registration/registro.html'
-      success_url = reverse_lazy('login')
+from .forms import RegistroForm 
 
+class RegistroView(CreateView):
+    form_class = RegistroForm 
+    template_name = 'registration/registro.html'
+    success_url = reverse_lazy('login')
 
 # Vistas para Ventura Motors
 

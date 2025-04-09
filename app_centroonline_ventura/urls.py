@@ -1,14 +1,15 @@
-from django.urls import path, include  # Añade include
-from django.contrib import admin  # Importa admin
+from django.urls import path, include  
+from django.contrib import admin 
 from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 from .views import LiberarVehiculoView
+from .views import RegistroView
 
 urlpatterns = [
     # General
     path('', views.principal, name='principal'),
-    path('registro/', views.registro, name='registro'),
+    path('registro/', RegistroView.as_view(), name='registro'),
     path('login/', views.iniciar_sesion, name='iniciar_sesion'),
 
     # Ventura Motors
