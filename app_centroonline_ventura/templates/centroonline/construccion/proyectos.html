@@ -5,87 +5,11 @@
 {% block extra_head %}
 <!-- SweetAlert2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<!-- Animate.css -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-<style>
-    .project-card {
-        transition: all 0.3s ease;
-        cursor: pointer;
-        overflow: hidden;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        margin-bottom: 25px;
-        height: 100%;
-    }
-    .project-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-    }
-    .project-img {
-        height: 250px;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    .project-card:hover .project-img {
-        transform: scale(1.05);
-    }
-    .status-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 0.8rem;
-        padding: 5px 10px;
-        border-radius: 20px;
-    }
-    .status-planning {
-        background-color: #6c757d;
-        color: white;
-    }
-    .status-construction {
-        background-color: #fd7e14;
-        color: white;
-    }
-    .status-finished {
-        background-color: #198754;
-        color: white;
-    }
-    .status-delivered {
-        background-color: #0d6efd;
-        color: white;
-    }
-    .progress-container {
-        height: 8px;
-        background-color: #e9ecef;
-        border-radius: 4px;
-        margin: 15px 0;
-    }
-    .progress-bar {
-        height: 100%;
-        border-radius: 4px;
-    }
-    .budget-badge {
-        background-color: #ffc107;
-        color: #212529;
-        font-weight: bold;
-    }
-    .filter-btn.active {
-        font-weight: bold;
-        transform: scale(1.05);
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .project-date {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-    .location-icon {
-        color: #dc3545;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="text-center mb-5 animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
         <h1 class="display-4 mb-3">Nuestros Proyectos</h1>
         <p class="lead">Descubre nuestras obras en desarrollo y proyectos finalizados</p>
         
@@ -111,7 +35,7 @@
 
     <div class="row">
         {% for proyecto in proyectos %}
-        <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp" style="animation-delay: {{ forloop.counter|add:"-1"|divisibleby:3|yesno:"0,0.1,0.2" }}s">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card project-card h-100" onclick="showProjectDetails({{ proyecto.id }})">
                 <div class="position-relative">
                     <img src="{{ proyecto.imagen_principal.url }}" class="card-img-top project-img" alt="{{ proyecto.nombre }}">
@@ -126,16 +50,6 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ proyecto.nombre }}</h5>
                     <p class="card-text">{{ proyecto.descripcion|truncatewords:20 }}</p>
-                    
-                    <div class="progress-container">
-                        <div class="progress-bar 
-                            {% if proyecto.estado == 'PLANIFICACION' %}bg-secondary width-25
-                            {% elif proyecto.estado == 'CONSTRUCCION' %}bg-warning width-65
-                            {% elif proyecto.estado == 'FINALIZADO' %}bg-success width-90
-                            {% else %}bg-primary width-100{% endif %}">
-                        </div>
-                    </div>
-                    
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <span class="budget-badge badge">
                             ${{ proyecto.presupuesto|floatformat:"0" }}
@@ -152,16 +66,12 @@
                             <i class="fas fa-map-marker-alt location-icon"></i> 
                             {{ proyecto.ubicacion }}
                         </span>
-                        <button class="btn btn-sm btn-outline-primary" 
-                                onclick="event.stopPropagation(); showProjectDetails({{ proyecto.id }})">
-                            Ver detalles
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5 animate__animated animate__fadeIn">
+        <div class="col-12 text-center py-5">
             <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" style="width: 150px; opacity: 0.7;" class="mb-4">
             <h3 class="text-muted">No se encontraron proyectos</h3>
             <p class="text-muted">No hay proyectos que coincidan con tu selección</p>
@@ -179,7 +89,42 @@
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 <script>
-    // Función para mostrar detalles del proyecto con AJAX
+    // Función para generar datos aleatorios de proyectos
+    function getRandomProjectData(id) {
+        const nombres = ["Proyecto A", "Proyecto B", "Proyecto C", "Proyecto D", "Proyecto E"];
+        const ubicaciones = ["Madrid", "Barcelona", "Sevilla", "Valencia", "Zaragoza"];
+        const descripciones = [
+            "Descripción detallada del proyecto con todas sus características y especificaciones técnicas.",
+            "Este proyecto tiene un enfoque innovador en el uso de tecnologías de construcción avanzada.",
+            "El proyecto se centra en la eficiencia energética y la sostenibilidad a largo plazo.",
+            "Con una fuerte inversión en infraestructura, este proyecto promete ser un hito en la industria.",
+            "Un proyecto con una planificación meticulosa para garantizar su éxito."
+        ];
+        const estados = ["PLANIFICACION", "CONSTRUCCION", "FINALIZADO", "ENTREGADO"];
+        const fechas = [
+            "2023-01-15",
+            "2023-05-10",
+            "2023-09-20",
+            "2024-02-01",
+            "2024-07-15"
+        ];
+        const presupuestos = [1000000, 1250000, 1500000, 2000000, 2500000];
+
+        const projectData = {
+            id: id,
+            nombre: nombres[Math.floor(Math.random() * nombres.length)],
+            descripcion: descripciones[Math.floor(Math.random() * descripciones.length)],
+            ubicacion: ubicaciones[Math.floor(Math.random() * ubicaciones.length)],
+            fecha_inicio: fechas[Math.floor(Math.random() * fechas.length)],
+            fecha_estimada_fin: fechas[Math.floor(Math.random() * fechas.length)],
+            estado: estados[Math.floor(Math.random() * estados.length)],
+            presupuesto: presupuestos[Math.floor(Math.random() * presupuestos.length)]
+        };
+
+        return projectData;
+    }
+
+    // Función para mostrar los detalles del proyecto con los datos aleatorios
     function showProjectDetails(projectId) {
         // Mostrar loader mientras se carga la información
         Swal.fire({
@@ -190,132 +135,30 @@
             }
         });
         
-        // Simulamos una petición AJAX (en producción sería una llamada real)
+        // Generamos los datos del proyecto aleatoriamente
         setTimeout(() => {
-            // En una implementación real, aquí harías:
-            // fetch(`/api/proyectos/${projectId}/`)
-            //   .then(response => response.json())
-            //   .then(data => showProjectModal(data))
-            
-            // Por ahora simulamos datos
-            const projectData = {
-                id: projectId,
-                nombre: "Proyecto " + projectId,
-                descripcion: "Descripción detallada del proyecto con todas sus características y especificaciones técnicas.",
-                ubicacion: "Ubicación exacta del proyecto",
-                fecha_inicio: "2023-01-15",
-                fecha_estimada_fin: "2024-06-30",
-                estado: "CONSTRUCCION",
-                presupuesto: "1250000",
-                imagenes: [
-                    {url: "https://via.placeholder.com/800x500?text=Imagen+1", descripcion: "Vista frontal"},
-                    {url: "https://via.placeholder.com/800x500?text=Imagen+2", descripcion: "Vista área"},
-                    {url: "https://via.placeholder.com/800x500?text=Imagen+3", descripcion: "Detalle interior"}
-                ]
-            };
-            
+            const projectData = getRandomProjectData(projectId);
             showProjectModal(projectData);
         }, 800);
     }
-    
+
     // Función para mostrar el modal con los detalles del proyecto
     function showProjectModal(project) {
-        // Determinar clase de estado
-        let statusClass, progressWidth;
-        switch(project.estado) {
-            case 'PLANIFICACION':
-                statusClass = 'status-planning';
-                progressWidth = '25%';
-                break;
-            case 'CONSTRUCCION':
-                statusClass = 'status-construction';
-                progressWidth = '65%';
-                break;
-            case 'FINALIZADO':
-                statusClass = 'status-finished';
-                progressWidth = '90%';
-                break;
-            case 'ENTREGADO':
-                statusClass = 'status-delivered';
-                progressWidth = '100%';
-                break;
-            default:
-                statusClass = 'status-planning';
-                progressWidth = '25%';
-        }
-        
-        // Crear HTML para la galería de imágenes
-        let galleryHTML = `
-            <div class="swiper my-3">
-                <div class="swiper-wrapper">
-                    ${project.imagenes.map(img => `
-                        <div class="swiper-slide">
-                            <img src="${img.url}" class="img-fluid rounded" alt="${img.descripcion}">
-                            <p class="text-center text-muted mt-2">${img.descripcion}</p>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-            </div>
-        `;
-        
-        // Crear HTML para la información del proyecto
-        let infoHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong><i class="fas fa-map-marker-alt location-icon"></i> Ubicación:</strong> ${project.ubicacion}</p>
-                    <p><strong><i class="fas fa-calendar-alt"></i> Fecha inicio:</strong> ${new Date(project.fecha_inicio).toLocaleDateString()}</p>
-                    <p><strong><i class="fas fa-calendar-check"></i> Fecha estimada fin:</strong> ${new Date(project.fecha_estimada_fin).toLocaleDateString()}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong><i class="fas fa-money-bill-wave"></i> Presupuesto:</strong> $${parseFloat(project.presupuesto).toLocaleString()}</p>
-                    <div class="progress-container mt-3">
-                        <div class="progress-bar ${statusClass.replace('status-', 'bg-')}" style="width: ${progressWidth}"></div>
-                    </div>
-                    <p class="text-center mt-2"><span class="badge ${statusClass}">${project.estado}</span></p>
-                </div>
-            </div>
-            <hr>
-            <h5>Descripción detallada</h5>
-            <p>${project.descripcion}</p>
-        `;
-        
         Swal.fire({
             title: project.nombre,
-            html: galleryHTML + infoHTML,
-            width: '90%',
-            padding: '3em',
-            backdrop: `
-                rgba(0,0,0,0.7)
-                url("/static/images/construction-pattern.png")
-                center top
-                repeat
+            html: `
+                <p><strong><i class="fas fa-map-marker-alt"></i> Ubicación:</strong> ${project.ubicacion}</p>
+                <p><strong><i class="fas fa-calendar-alt"></i> Fecha inicio:</strong> ${new Date(project.fecha_inicio).toLocaleDateString()}</p>
+                <p><strong><i class="fas fa-calendar-check"></i> Fecha estimada fin:</strong> ${new Date(project.fecha_estimada_fin).toLocaleDateString()}</p>
+                <p><strong><i class="fas fa-money-bill-wave"></i> Presupuesto:</strong> $${parseFloat(project.presupuesto).toLocaleString()}</p>
+                <p><strong><i class="fas fa-info-circle"></i> Descripción:</strong> ${project.descripcion}</p>
             `,
-            showConfirmButton: true,
-            confirmButtonText: 'Cerrar',
+            width: '80%',
             showCloseButton: true,
-            didOpen: () => {
-                // Inicializar swiper para la galería
-                new Swiper('.swiper', {
-                    loop: true,
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    autoplay: {
-                        delay: 5000,
-                    },
-                });
-            }
+            confirmButtonText: 'Cerrar'
         });
     }
-    
+
     // Mostrar alerta de bienvenida
     document.addEventListener('DOMContentLoaded', function() {
         if (!sessionStorage.getItem('constructionWelcomeShown')) {
@@ -325,14 +168,7 @@
                 imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
                 imageWidth: 600,
                 imageAlt: 'Proyectos de construcción',
-                confirmButtonText: 'Explorar proyectos',
-                background: '#fff url(/static/images/construction-bg.jpg)',
-                backdrop: `
-                    rgba(0,0,0,0.7)
-                    url("/static/images/construction-pattern.png")
-                    left top
-                    no-repeat
-                `
+                confirmButtonText: 'Explorar proyectos'
             });
             sessionStorage.setItem('constructionWelcomeShown', 'true');
         }

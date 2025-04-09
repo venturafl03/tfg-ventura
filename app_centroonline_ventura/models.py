@@ -338,7 +338,7 @@ class Viaje(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    pais = models.CharField(max_length=2, choices=PAISES_CHOICES, default='ES')  # España por defecto
+    pais = models.CharField(max_length=2, choices=PAISES_CHOICES, default='ES')  
 
     def __str__(self):
         return self.nombre
