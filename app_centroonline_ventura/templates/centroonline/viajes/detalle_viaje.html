@@ -1,0 +1,11 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h2>{{ viaje.nombre }}</h2>
+  <p>{{ viaje.descripcion }}</p>
+  <p><strong>Destino:</strong> {{ viaje.destino }}</p>
+  <p><strong>Fecha de inicio:</strong> {{ viaje.fecha_inicio }}</p>
+  <p><strong>Fecha de fin:</strong> {{ viaje.fecha_fin }}</p>
+  <a href="{% url 'viajes:editar_viaje' viaje.pk %}">Editar</a>
+  <a href="{% url 'viajes:eliminar_viaje' viaje.pk %}">Eliminar</a>
+{% endblock %}

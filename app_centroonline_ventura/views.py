@@ -18,6 +18,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.views import View
+from django.views.generic import ListView, TemplateView
 
 
 # Vistas generales
@@ -264,3 +265,39 @@ class ProductoEstudioDetailView(DetailView):
     model = ProductoEstudio
     template_name = 'centroonline/libreria/detalle_producto.html'
     context_object_name = 'producto'
+
+
+
+
+# viajes 
+class ViajeListView(ListView):
+    model = Viaje
+    template_name = 'centroonline/viajes/listar_viajes.html'
+    context_object_name = 'viajes'
+
+# Vista para ver los detalles de un viaje específico
+class ViajeDetailView(DetailView):
+    model = Viaje
+    template_name = 'centroonline/viajes/detalle_viaje.html'
+    context_object_name = 'viaje'
+
+# Vista para crear un nuevo viaje
+class ViajeCreateView(CreateView):
+    model = Viaje
+    form_class = ViajeForm
+    template_name = 'centroonline/viajes/crear_viaje.html'
+    success_url = reverse_lazy('viajes:lista_viajes')
+
+# Vista para editar un viaje existente
+class ViajeUpdateView(UpdateView):
+    model = Viaje
+    form_class = ViajeForm
+    template_name = 'centroonline/viajes/editar_viaje.html'
+    success_url = reverse_lazy('viajes:lista_viajes')
+
+# Vista para eliminar un viaje
+class ViajeDeleteView(DeleteView):
+    model = Viaje
+    template_name = 'centroonline/viajes/eliminar_viaje.html'
+    context_object_name = 'viaje'
+    success_url = reverse_lazy('viajes:lista_viajes')

@@ -1,0 +1,13 @@
+{% extends 'centroonline/base.html' %}
+
+{% block content %}
+  <h2>Lista de Viajes</h2>
+  <ul>
+    {% for viaje in viajes %}
+      <li>
+        <a href="{% url 'viajes:detalle_viaje' viaje.pk %}">{{ viaje.nombre }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'crear_viaje' %}">Crear un nuevo viaje</a>
+{% endblock %}

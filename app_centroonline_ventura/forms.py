@@ -2,6 +2,8 @@ from django import forms
 from .models import *
 from .models import Reserva
 
+from .models import Viaje, Pais
+
 class TestDriveForm(forms.ModelForm):
     class Meta:
         model = TestDrive
@@ -37,13 +39,12 @@ class ReservaForm(forms.ModelForm):
             'comentarios': forms.Textarea(attrs={'rows': 3}),
         }
         
-        labels = {
-            'nombre': 'Nombre completo',
-            'correo': 'Correo electrónico',
-            'telefono': 'Teléfono de contacto',
-            'direccion': 'Dirección',
-            'fecha_inicio': 'Fecha de inicio de reserva',
-            'fecha_fin': 'Fecha de fin de reserva',
-            'comentarios': 'Comentarios adicionales',
-        }
-
+class ViajeForm(forms.ModelForm):
+    class Meta:
+        model = Viaje
+        fields = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin', 'destino', 'categoria']
+        
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ['nombre']

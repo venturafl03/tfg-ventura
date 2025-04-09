@@ -1,0 +1,10 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h2>¿Seguro que quieres eliminar el viaje "{{ viaje.nombre }}"?</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit">Eliminar</button>
+  </form>
+  <a href="{% url 'viajes:lista_viajes' %}">Cancelar</a>
+{% endblock %}

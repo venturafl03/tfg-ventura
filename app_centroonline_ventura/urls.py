@@ -39,6 +39,13 @@ urlpatterns = [
   # libreria 
    path('estudio/', views.ProductoEstudioListView.as_view(), name='estudio'),
    path('estudio/detalle/<int:pk>/', views.ProductoEstudioDetailView.as_view(), name='detalle_producto_estudio'),
+
+    # viajes
+    path('viaje/', views.ViajeListView.as_view(), name='viaje'),
+    path('viaje/<int:pk>/', views.ViajeDetailView.as_view(), name='detalle_viaje'),
+    path('crear/', views.ViajeCreateView.as_view(), name='crear_viaje'),
+    path('editar/<int:pk>/', views.ViajeUpdateView.as_view(), name='editar_viaje'),
+    path('eliminar/<int:pk>/', views.ViajeDeleteView.as_view(), name='eliminar_viaje'),
     # Autenticación y administración
 
     path('accounts/', include('django.contrib.auth.urls')), 
