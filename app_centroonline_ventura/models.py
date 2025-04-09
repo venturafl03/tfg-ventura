@@ -119,18 +119,6 @@ class TestDrive(models.Model):
 
 # Modelos para la Baguetería Ventura
 
-class CategoriaProducto(models.Model):
-    nombre = models.CharField(max_length=50)
-    descripcion = models.TextField(blank=True)
-    icono = models.CharField(max_length=30, blank=True, help_text="Clase de Font Awesome para el icono")
-
-    class Meta:
-        verbose_name_plural = "Categorías de Productos(bagueteria)"
-
-    def __str__(self):
-        return self.nombre
-
-
 class Producto(models.Model):
     TIPO_PAN_CHOICES = [
         ('TRADICIONAL', 'Tradicional'),
@@ -139,7 +127,6 @@ class Producto(models.Model):
     ]
     
     nombre = models.CharField(max_length=100)
-    categoria = models.ForeignKey(CategoriaProducto, on_delete=models.PROTECT)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=6, decimal_places=2)
     tipo_pan = models.CharField(max_length=15, choices=TIPO_PAN_CHOICES, blank=True, null=True)
@@ -201,15 +188,6 @@ class DetallePedido(models.Model):
 
 # Modelos para Ventura Market
 
-class Proveedor(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=15)
-
-    def __str__(self):
-        return self.nombre
-
-
 class ProductoMarket(models.Model):
     CATEGORIA_CHOICES = [
         ('ALIMENTOS', 'Alimentos'),
@@ -220,7 +198,6 @@ class ProductoMarket(models.Model):
     
     nombre = models.CharField(max_length=100)
     categoria = models.CharField(max_length=10, choices=CATEGORIA_CHOICES)
-    proveedor = models.ForeignKey(Proveedor, on_delete=models.PROTECT, null=True, blank=True)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=6, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)

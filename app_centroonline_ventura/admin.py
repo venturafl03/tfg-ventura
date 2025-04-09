@@ -6,11 +6,8 @@ from .models import (
     UsuarioPersonalizado,
     Vehiculo,
     TestDrive,
-    CategoriaProducto,
     Producto,
     Pedido,
-    DetallePedido,
-    Proveedor,
     ProductoMarket,
     ProyectoConstruccion,
     Perfumeria,
@@ -24,11 +21,8 @@ from .models import (
 admin.site.register(UsuarioPersonalizado)
 admin.site.register(Vehiculo)
 admin.site.register(TestDrive)
-admin.site.register(CategoriaProducto)
 admin.site.register(Producto)
 admin.site.register(Pedido)
-admin.site.register(DetallePedido)
-admin.site.register(Proveedor)
 admin.site.register(ProductoMarket)
 admin.site.register(ProyectoConstruccion)
 admin.site.register(Perfumeria)
