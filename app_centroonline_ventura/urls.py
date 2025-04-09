@@ -30,9 +30,15 @@ urlpatterns = [
     path('producto/<int:pk>/', views.DetalleProductoView.as_view(), name='detalle_producto'),
     # Home Build
     path('construccion/', views.ProyectoConstruccionListView.as_view(), name='proyectos'),
+    path('construccion/detalle/<int:pk>/', views.ProyectoConstruccionDetailView.as_view(), name='detalle_proyecto'),
+
+
+   #perfumeria 
+   path('perfumerias/', views.PerfumeriaListView.as_view(), name='perfumeria'),
+
 
     # Autenticación y administración
-    path('admin/', admin.site.urls),
+
     path('accounts/', include('django.contrib.auth.urls')), 
 ]
 

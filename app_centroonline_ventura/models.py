@@ -274,3 +274,23 @@ class ImagenProyecto(models.Model):
 
     class Meta:
         ordering = ['-fecha']
+
+
+
+#perfumeria 
+class Perfumeria(models.Model):
+    GENERO_CHOICES = [
+        ('H', 'Hombre'),
+        ('M', 'Mujer'),
+        ('U', 'Unisex')
+    ]
+
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=8, decimal_places=2)
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
+    imagen = models.ImageField(upload_to='perfumerias/')
+    stock = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.nombre 

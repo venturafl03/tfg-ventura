@@ -145,8 +145,7 @@ class ReservaConfirmadaView(DetailView):
 
     def post(self, request, *args, **kwargs):
         vehiculo = self.get_object()
-        # Aquí puedes agregar lógica adicional para manejar la reserva, como guardar los datos en un modelo
-        # Por ejemplo, podrías guardar un nuevo registro de reserva:
+ 
         reserva = Reserva.objects.create(
             vehiculo=vehiculo,
             nombre=request.POST.get('nombre'),
@@ -155,7 +154,6 @@ class ReservaConfirmadaView(DetailView):
             direccion=request.POST.get('direccion')
         )
 
-        # Redirigir al usuario a una página de confirmación después de la reserva
         return HttpResponseRedirect(reverse('reserva_confirmada', args=[vehiculo.pk]))
 
 
@@ -205,6 +203,9 @@ class ProyectoConstruccionDetailView(DetailView):
     model = ProyectoConstruccion
     template_name = 'centroonline/construccion/detalle_proyecto.html'
 
+
+
+
 def registro(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -230,3 +231,17 @@ def iniciar_sesion(request):
 def cerrar_sesion(request):
     logout(request)
     return redirect('principal') 
+
+
+# perfumeria 
+class PerfumeriaListView(ListView):
+    model = Perfumeria
+    template_name = 'centroonline/perfumeria/perfumeria.html'
+    context_object_name = 'perfumerias'
+
+    def get_queryset(self):
+        queryset = Perfumeria.objects.all()
+        genero = self.request.GET.get('genero')
+        if genero:
+            queryset = queryset.filter(genero=genero)
+        return queryset

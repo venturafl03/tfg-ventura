@@ -1,0 +1,341 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Home Build - Nuestros Proyectos{% endblock %}
+
+{% block extra_head %}
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<style>
+    .project-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        height: 100%;
+    }
+    .project-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    .project-img {
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .project-card:hover .project-img {
+        transform: scale(1.05);
+    }
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+    .status-planning {
+        background-color: #6c757d;
+        color: white;
+    }
+    .status-construction {
+        background-color: #fd7e14;
+        color: white;
+    }
+    .status-finished {
+        background-color: #198754;
+        color: white;
+    }
+    .status-delivered {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .progress-container {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        margin: 15px 0;
+    }
+    .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+    }
+    .budget-badge {
+        background-color: #ffc107;
+        color: #212529;
+        font-weight: bold;
+    }
+    .filter-btn.active {
+        font-weight: bold;
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .project-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .location-icon {
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <h1 class="display-4 mb-3">Nuestros Proyectos</h1>
+        <p class="lead">Descubre nuestras obras en desarrollo y proyectos finalizados</p>
+        
+        <!-- Filtros de estado -->
+        <div class="btn-group btn-group-toggle mb-4" data-toggle="buttons">
+            <a href="{% url 'proyectos' %}" class="btn btn-outline-secondary {% if not request.GET.estado %}active{% endif %}">
+                Todos
+            </a>
+            <a href="?estado=PLANIFICACION" class="btn btn-outline-secondary {% if request.GET.estado == 'PLANIFICACION' %}active{% endif %}">
+                Planificación
+            </a>
+            <a href="?estado=CONSTRUCCION" class="btn btn-outline-secondary {% if request.GET.estado == 'CONSTRUCCION' %}active{% endif %}">
+                En construcción
+            </a>
+            <a href="?estado=FINALIZADO" class="btn btn-outline-secondary {% if request.GET.estado == 'FINALIZADO' %}active{% endif %}">
+                Finalizados
+            </a>
+            <a href="?estado=ENTREGADO" class="btn btn-outline-secondary {% if request.GET.estado == 'ENTREGADO' %}active{% endif %}">
+                Entregados
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for proyecto in proyectos %}
+        <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp" style="animation-delay: {{ forloop.counter|add:"-1"|divisibleby:3|yesno:"0,0.1,0.2" }}s">
+            <div class="card project-card h-100" onclick="showProjectDetails({{ proyecto.id }})">
+                <div class="position-relative">
+                    <img src="{{ proyecto.imagen_principal.url }}" class="card-img-top project-img" alt="{{ proyecto.nombre }}">
+                    <span class="status-badge 
+                        {% if proyecto.estado == 'PLANIFICACION' %}status-planning
+                        {% elif proyecto.estado == 'CONSTRUCCION' %}status-construction
+                        {% elif proyecto.estado == 'FINALIZADO' %}status-finished
+                        {% else %}status-delivered{% endif %}">
+                        {{ proyecto.get_estado_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ proyecto.nombre }}</h5>
+                    <p class="card-text">{{ proyecto.descripcion|truncatewords:20 }}</p>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar 
+                            {% if proyecto.estado == 'PLANIFICACION' %}bg-secondary width-25
+                            {% elif proyecto.estado == 'CONSTRUCCION' %}bg-warning width-65
+                            {% elif proyecto.estado == 'FINALIZADO' %}bg-success width-90
+                            {% else %}bg-primary width-100{% endif %}">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="budget-badge badge">
+                            ${{ proyecto.presupuesto|floatformat:"0" }}
+                        </span>
+                        <small class="project-date">
+                            <i class="fas fa-calendar-alt"></i> 
+                            {{ proyecto.fecha_inicio|date:"M Y" }} - {{ proyecto.fecha_estimada_fin|date:"M Y" }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-map-marker-alt location-icon"></i> 
+                            {{ proyecto.ubicacion }}
+                        </span>
+                        <button class="btn btn-sm btn-outline-primary" 
+                                onclick="event.stopPropagation(); showProjectDetails({{ proyecto.id }})">
+                            Ver detalles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 animate__animated animate__fadeIn">
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" style="width: 150px; opacity: 0.7;" class="mb-4">
+            <h3 class="text-muted">No se encontraron proyectos</h3>
+            <p class="text-muted">No hay proyectos que coincidan con tu selección</p>
+            <a href="{% url 'proyectos' %}" class="btn btn-primary">Ver todos los proyectos</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    // Función para mostrar detalles del proyecto con AJAX
+    function showProjectDetails(projectId) {
+        // Mostrar loader mientras se carga la información
+        Swal.fire({
+            title: 'Cargando proyecto...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Simulamos una petición AJAX (en producción sería una llamada real)
+        setTimeout(() => {
+            // En una implementación real, aquí harías:
+            // fetch(`/api/proyectos/${projectId}/`)
+            //   .then(response => response.json())
+            //   .then(data => showProjectModal(data))
+            
+            // Por ahora simulamos datos
+            const projectData = {
+                id: projectId,
+                nombre: "Proyecto " + projectId,
+                descripcion: "Descripción detallada del proyecto con todas sus características y especificaciones técnicas.",
+                ubicacion: "Ubicación exacta del proyecto",
+                fecha_inicio: "2023-01-15",
+                fecha_estimada_fin: "2024-06-30",
+                estado: "CONSTRUCCION",
+                presupuesto: "1250000",
+                imagenes: [
+                    {url: "https://via.placeholder.com/800x500?text=Imagen+1", descripcion: "Vista frontal"},
+                    {url: "https://via.placeholder.com/800x500?text=Imagen+2", descripcion: "Vista área"},
+                    {url: "https://via.placeholder.com/800x500?text=Imagen+3", descripcion: "Detalle interior"}
+                ]
+            };
+            
+            showProjectModal(projectData);
+        }, 800);
+    }
+    
+    // Función para mostrar el modal con los detalles del proyecto
+    function showProjectModal(project) {
+        // Determinar clase de estado
+        let statusClass, progressWidth;
+        switch(project.estado) {
+            case 'PLANIFICACION':
+                statusClass = 'status-planning';
+                progressWidth = '25%';
+                break;
+            case 'CONSTRUCCION':
+                statusClass = 'status-construction';
+                progressWidth = '65%';
+                break;
+            case 'FINALIZADO':
+                statusClass = 'status-finished';
+                progressWidth = '90%';
+                break;
+            case 'ENTREGADO':
+                statusClass = 'status-delivered';
+                progressWidth = '100%';
+                break;
+            default:
+                statusClass = 'status-planning';
+                progressWidth = '25%';
+        }
+        
+        // Crear HTML para la galería de imágenes
+        let galleryHTML = `
+            <div class="swiper my-3">
+                <div class="swiper-wrapper">
+                    ${project.imagenes.map(img => `
+                        <div class="swiper-slide">
+                            <img src="${img.url}" class="img-fluid rounded" alt="${img.descripcion}">
+                            <p class="text-center text-muted mt-2">${img.descripcion}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        `;
+        
+        // Crear HTML para la información del proyecto
+        let infoHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong><i class="fas fa-map-marker-alt location-icon"></i> Ubicación:</strong> ${project.ubicacion}</p>
+                    <p><strong><i class="fas fa-calendar-alt"></i> Fecha inicio:</strong> ${new Date(project.fecha_inicio).toLocaleDateString()}</p>
+                    <p><strong><i class="fas fa-calendar-check"></i> Fecha estimada fin:</strong> ${new Date(project.fecha_estimada_fin).toLocaleDateString()}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong><i class="fas fa-money-bill-wave"></i> Presupuesto:</strong> $${parseFloat(project.presupuesto).toLocaleString()}</p>
+                    <div class="progress-container mt-3">
+                        <div class="progress-bar ${statusClass.replace('status-', 'bg-')}" style="width: ${progressWidth}"></div>
+                    </div>
+                    <p class="text-center mt-2"><span class="badge ${statusClass}">${project.estado}</span></p>
+                </div>
+            </div>
+            <hr>
+            <h5>Descripción detallada</h5>
+            <p>${project.descripcion}</p>
+        `;
+        
+        Swal.fire({
+            title: project.nombre,
+            html: galleryHTML + infoHTML,
+            width: '90%',
+            padding: '3em',
+            backdrop: `
+                rgba(0,0,0,0.7)
+                url("/static/images/construction-pattern.png")
+                center top
+                repeat
+            `,
+            showConfirmButton: true,
+            confirmButtonText: 'Cerrar',
+            showCloseButton: true,
+            didOpen: () => {
+                // Inicializar swiper para la galería
+                new Swiper('.swiper', {
+                    loop: true,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    autoplay: {
+                        delay: 5000,
+                    },
+                });
+            }
+        });
+    }
+    
+    // Mostrar alerta de bienvenida
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!sessionStorage.getItem('constructionWelcomeShown')) {
+            Swal.fire({
+                title: 'Bienvenido a Home Build',
+                text: 'Explora nuestros proyectos de construcción innovadores',
+                imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                imageWidth: 600,
+                imageAlt: 'Proyectos de construcción',
+                confirmButtonText: 'Explorar proyectos',
+                background: '#fff url(/static/images/construction-bg.jpg)',
+                backdrop: `
+                    rgba(0,0,0,0.7)
+                    url("/static/images/construction-pattern.png")
+                    left top
+                    no-repeat
+                `
+            });
+            sessionStorage.setItem('constructionWelcomeShown', 'true');
+        }
+    });
+</script>
+{% endblock %}
