@@ -25,6 +25,13 @@ from django.views.generic import ListView, TemplateView
 def principal(request):
     return render(request, 'centroonline/principal.html')
 
+
+class RegistroView(CreateView):
+      form_class = RegistroForm
+      template_name = 'registration/registro.html'
+      success_url = reverse_lazy('login')
+
+
 # Vistas para Ventura Motors
 
 class LiberarVehiculoView(LoginRequiredMixin, UserPassesTestMixin, View):

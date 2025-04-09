@@ -3,7 +3,7 @@ from django.contrib import admin
 # app_centroonline_ventura/admin.py
 from django.contrib import admin
 from .models import (
-    UsuarioPersonalizado,
+    Usuario,
     Vehiculo,
     TestDrive,
     Producto,
@@ -18,7 +18,7 @@ from .models import (
 
 # Registro de modelos en el admin
 
-admin.site.register(UsuarioPersonalizado)
+admin.site.register(Usuario)
 admin.site.register(Vehiculo)
 admin.site.register(TestDrive)
 admin.site.register(Producto)

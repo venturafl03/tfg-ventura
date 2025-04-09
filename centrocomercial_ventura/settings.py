@@ -132,4 +132,4 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 
-AUTH_USER_MODEL = 'app_centroonline_ventura.UsuarioPersonalizado'
+AUTH_USER_MODEL = 'app_centroonline_ventura.Usuario'

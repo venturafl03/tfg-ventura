@@ -1,9 +1,16 @@
 from django import forms
 from .models import *
 from .models import Reserva
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import Viaje
 
+
+class RegistroForm(UserCreationForm):
+      class Meta:
+            model = Usuario
+            fields = ['username', 'password1','password2']    
+        
 class TestDriveForm(forms.ModelForm):
     class Meta:
         model = TestDrive

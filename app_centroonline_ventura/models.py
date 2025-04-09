@@ -5,24 +5,8 @@ from django.utils import timezone
 
 
 
-class UsuarioPersonalizado(AbstractUser):
-    TIPO_USUARIO_CHOICES = [
-        ('CLIENTE', 'Cliente'),
-        ('EMPLEADO', 'Empleado'),
-        ('ADMIN', 'Administrador'),
-    ]
-    
-    tipo_usuario = models.CharField(max_length=10, choices=TIPO_USUARIO_CHOICES, default='CLIENTE')
-    telefono = models.CharField(max_length=15, blank=True, null=True)
-    direccion = models.TextField(blank=True, null=True)
-    fecha_nacimiento = models.DateField(blank=True, null=True)
-    foto_perfil = models.ImageField(upload_to='perfiles/', blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.username} - {self.get_tipo_usuario_display()}"
-
-# Modelos para Ventura Motors (Concesionario)
-
+class Usuario(AbstractUser):
+    telefono = models.CharField(max_length=20, blank=True)
 
 class Vehiculo(models.Model):
     TIPO_VEHICULO_CHOICES = [
@@ -65,7 +49,7 @@ class Vehiculo(models.Model):
     fecha_ingreso = models.DateTimeField(default=timezone.now)
     destacado = models.BooleanField(default=False)
     reservado = models.BooleanField(default=False)
-    reservado_por = models.ForeignKey(UsuarioPersonalizado, null=True, blank=True, on_delete=models.SET_NULL)
+    reservado_por = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
     fecha_reserva = models.DateTimeField(null=True, blank=True)
     
 
@@ -87,7 +71,7 @@ class Reserva(models.Model):
     fecha_fin = models.DateField()
     comentarios = models.TextField(blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f'Reserva de {self.nombre} para {self.vehiculo}'
@@ -106,7 +90,7 @@ class TestDrive(models.Model):
         ('CANCELADO', 'Cancelado'),
     ]
     
-    usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     fecha_test = models.DateTimeField()
@@ -153,7 +137,7 @@ class Pedido(models.Model):
         ('CANCELADO', 'Cancelado'),
     ]
     
-    usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_pedido = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='PENDIENTE')
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
