@@ -105,8 +105,6 @@
             <div class="d-flex justify-content-between">
               <a href="{% url 'detalle_viaje' viaje.pk %}" class="btn btn-outline-primary btn-sm">Ver detalles</a>
               <div class="btn-group">
-                <a href="{% url 'editar_viaje' viaje.pk %}" class="btn btn-sm btn-outline-secondary"><i class="far fa-edit"></i></a>
-                <a href="{% url 'eliminar_viaje' viaje.pk %}" class="btn btn-sm btn-outline-danger"><i class="far fa-trash-alt"></i></a>
               </div>
             </div>
           </div>
@@ -116,7 +114,6 @@
       <div class="col-12 text-center py-5">
         <img src="https://via.placeholder.com/300x200?text=No+viajes+disponibles" class="img-fluid mb-4" alt="No hay viajes">
         <h4 class="text-muted">No hay viajes disponibles en este momento</h4>
-        <a href="{% url 'crear_viaje' %}" class="btn btn-primary mt-3">Crear primer viaje</a>
       </div>
       {% endfor %}
     </div>
@@ -146,8 +143,7 @@
               <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i> {{ viaje.fecha_inicio|date:"d M Y" }} - {{ viaje.fecha_fin|date:"d M Y" }}</small>
               <div class="mt-2">
                 <a href="{% url 'detalle_viaje' viaje.pk %}" class="btn btn-sm btn-outline-primary">Detalles</a>
-                <a href="{% url 'editar_viaje' viaje.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                <a href="{% url 'eliminar_viaje' viaje.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+
               </div>
             </div>
           </div>

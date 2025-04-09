@@ -2,7 +2,7 @@ from django import forms
 from .models import *
 from .models import Reserva
 
-from .models import Viaje, Pais
+from .models import Viaje
 
 class TestDriveForm(forms.ModelForm):
     class Meta:
@@ -72,7 +72,3 @@ class ViajeForm(forms.ModelForm):
                     "La fecha de fin debe ser posterior a la fecha de inicio"
                 )
         return cleaned_data
-class CategoriaForm(forms.ModelForm):
-    class Meta:
-        model = Categoria
-        fields = '__all__'

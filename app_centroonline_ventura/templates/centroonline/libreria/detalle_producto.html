@@ -13,7 +13,7 @@
             <p class="text-success">${{ producto.precio }}</p>
             <p>{{ producto.descripcion }}</p>
             <p><strong>Categoría:</strong> {{ producto.get_categoria_display }}</p>
-            <a href="#" class="btn btn-primary">Añadir al carrito</a>
+            <a href="{% url 'estudio' %}" class="btn btn-secondary mt-4">← Volver a Estudio</a>
         </div>
     </div>
 </div>

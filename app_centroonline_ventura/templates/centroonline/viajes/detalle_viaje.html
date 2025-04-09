@@ -58,17 +58,7 @@
             </div>
           </div>
           
-          <!-- Descripción con efecto "leer más" -->
-          <div class="mb-3">
-            <h5>Descripción</h5>
-            <div class="collapse" id="descripcionCollapse">
-              {{ viaje.descripcion }}
-            </div>
-            <a class="collapse-toggle" data-toggle="collapse" href="#descripcionCollapse">
-              <small>Mostrar más/menos</small>
-            </a>
-          </div>
-          
+         
           <!-- Botón de reserva -->
           <button class="btn btn-primary btn-block mt-3">
             <i class="fas fa-calendar-check mr-2"></i> Reservar este viaje
@@ -90,17 +80,7 @@
             <li class="list-group-item">
               <i class="fas fa-clock text-muted mr-2"></i>
               Duración: {{ viaje.duracion }} días
-            </li>
-            <li class="list-group-item">
-              <i class="fas fa-globe-americas text-muted mr-2"></i>
-              País: {{ viaje.pais.nombre }}
-            </li>
-            {% if viaje.categoria %}
-            <li class="list-group-item">
-              <i class="fas fa-tag text-muted mr-2"></i>
-              Categoría: {{ viaje.categoria.nombre }}
-            </li>
-            {% endif %}
+            </li> 
           </ul>
         </div>
       </div>

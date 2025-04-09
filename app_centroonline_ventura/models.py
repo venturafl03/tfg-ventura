@@ -23,18 +23,6 @@ class UsuarioPersonalizado(AbstractUser):
 
 # Modelos para Ventura Motors (Concesionario)
 
-class Marca(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    pais_origen = models.CharField(max_length=50)
-    año_fundacion = models.IntegerField()
-    logo = models.ImageField(upload_to='marcas/', blank=True, null=True)
-
-    class Meta:
-        verbose_name_plural = "Marcas"
-
-    def __str__(self):
-        return self.nombre
-
 
 class Vehiculo(models.Model):
     TIPO_VEHICULO_CHOICES = [
@@ -51,8 +39,17 @@ class Vehiculo(models.Model):
         ('MANUAL', 'Manual'),
         ('CVT', 'CVT'),
     ]
+    MARCA_CHOICES = [
+        ('TOYOTA', 'Toyota - Ventura'),
+        ('HONDA', 'Honda - Ventura'),
+        ('FORD', 'Ford - Ventura'),
+        ('CHEVROLET', 'Chevrolet - Ventura'),
+        ('BMW', 'BMW - Ventura'),
+        ('TESLA', 'Tesla - Ventura'),
+        ('HYUNDAI', 'Hyundai - Ventura'),
+    ]
     
-    marca = models.ForeignKey(Marca, on_delete=models.PROTECT)
+    marca = models.CharField(max_length=10, choices=MARCA_CHOICES)
     modelo = models.CharField(max_length=100)
     año = models.IntegerField()
     tipo = models.CharField(max_length=10, choices=TIPO_VEHICULO_CHOICES)
@@ -99,13 +96,6 @@ class Reserva(models.Model):
         verbose_name = 'Reserva de vehículo'
         verbose_name_plural = 'Reservas de vehículos'
         ordering = ['-fecha_creacion']
-class ImagenVehiculo(models.Model):
-    vehiculo = models.ForeignKey(Vehiculo, related_name='imagenes', on_delete=models.CASCADE)
-    imagen = models.ImageField(upload_to='vehiculos/galeria/')
-    orden = models.IntegerField(default=0)
-
-    class Meta:
-        ordering = ['orden']
 
 
 class TestDrive(models.Model):
@@ -267,15 +257,6 @@ class ProyectoConstruccion(models.Model):
         return self.nombre
 
 
-class ImagenProyecto(models.Model):
-    proyecto = models.ForeignKey(ProyectoConstruccion, related_name='imagenes', on_delete=models.CASCADE)
-    imagen = models.ImageField(upload_to='construccion/galeria/')
-    descripcion = models.CharField(max_length=200, blank=True)
-    fecha = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-fecha']
-
 
 
 #perfumeria 
@@ -330,25 +311,35 @@ class ProductoEstudio(models.Model):
 
 # viajes 
 class Viaje(models.Model):
+    PAISES_CHOICES = [
+        ('ES', 'España'),
+        ('FR', 'Francia'),
+        ('IT', 'Italia'),
+        ('DE', 'Alemania'),
+        ('PT', 'Portugal'),
+        ('MX', 'México'),
+        ('AR', 'Argentina'),
+        ('CL', 'Chile'),
+        ('CO', 'Colombia'),
+        ('PE', 'Perú'),
+        ('US', 'Estados Unidos'),
+        ('CA', 'Canadá'),
+        ('BR', 'Brasil'),
+        ('JP', 'Japón'),
+        ('CN', 'China'),
+        ('AU', 'Australia'),
+        ('IN', 'India'),
+        ('EG', 'Egipto'),
+        ('ZA', 'Sudáfrica'),
+        ('GR', 'Grecia'),
+    ]
+
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    pais = models.ForeignKey('pais', related_name='pais', on_delete=models.CASCADE)
-    categoria = models.ForeignKey('Categoria', on_delete=models.SET_NULL, null=True, blank=True)
-    
-    def __str__(self):
-        return self.nombre
-
-
-class Categoria(models.Model):
-    nombre = models.CharField(max_length=100)
+    pais = models.CharField(max_length=2, choices=PAISES_CHOICES, default='ES')  # España por defecto
 
     def __str__(self):
         return self.nombre
-    
-class Pais(models.Model):
-    nombre = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.nombre

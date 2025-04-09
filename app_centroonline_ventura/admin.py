@@ -4,9 +4,7 @@ from django.contrib import admin
 from django.contrib import admin
 from .models import (
     UsuarioPersonalizado,
-    Marca,
     Vehiculo,
-    ImagenVehiculo,
     TestDrive,
     CategoriaProducto,
     Producto,
@@ -15,20 +13,16 @@ from .models import (
     Proveedor,
     ProductoMarket,
     ProyectoConstruccion,
-    ImagenProyecto,
     Perfumeria,
     ProductoEstudio,
     Viaje,
-    Pais,
-    Categoria,
+
 )
 
 # Registro de modelos en el admin
 
 admin.site.register(UsuarioPersonalizado)
-admin.site.register(Marca)
 admin.site.register(Vehiculo)
-admin.site.register(ImagenVehiculo)
 admin.site.register(TestDrive)
 admin.site.register(CategoriaProducto)
 admin.site.register(Producto)
@@ -37,12 +31,9 @@ admin.site.register(DetallePedido)
 admin.site.register(Proveedor)
 admin.site.register(ProductoMarket)
 admin.site.register(ProyectoConstruccion)
-admin.site.register(ImagenProyecto)
 admin.site.register(Perfumeria)
 admin.site.register(ProductoEstudio)
 admin.site.register(Viaje)
-admin.site.register(Pais)
-admin.site.register(Categoria)
 
 
 
