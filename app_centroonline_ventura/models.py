@@ -294,3 +294,35 @@ class Perfumeria(models.Model):
 
     def __str__(self):
         return self.nombre 
+
+# libros 
+# centroonline/models.py
+
+from django.db import models
+
+# Modelo simplificado para productos de la tienda
+class ProductoEstudio(models.Model):
+    GENERO_LIBRO = (
+        ('ficcion', 'Ficción'),
+        ('no_ficcion', 'No Ficción'),
+        ('educativo', 'Educativo'),
+        ('ciencia', 'Ciencia'),
+        ('historia', 'Historia'),
+        ('fantasia', 'Fantasía'),
+        ('romance', 'Romance'),
+        ('arte', 'Arte'),
+        ('misterio', 'Misterio'),
+        ('infantil', 'Infantil'),
+    )
+    
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    categoria = models.CharField(max_length=100, choices=GENERO_LIBRO)
+    imagen = models.ImageField(upload_to='productos_estudio/')
+    
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name_plural = "Libreria"

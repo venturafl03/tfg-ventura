@@ -36,7 +36,9 @@ urlpatterns = [
    #perfumeria 
    path('perfumerias/', views.PerfumeriaListView.as_view(), name='perfumeria'),
 
-
+  # libreria 
+   path('estudio/', views.ProductoEstudioListView.as_view(), name='estudio'),
+   path('estudio/detalle/<int:pk>/', views.ProductoEstudioDetailView.as_view(), name='detalle_producto_estudio'),
     # Autenticación y administración
 
     path('accounts/', include('django.contrib.auth.urls')), 

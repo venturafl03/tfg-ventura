@@ -1,0 +1,529 @@
+{% extends 'centroonline/base.html' %}
+
+{% block title %}Libros y Productos de Estudio{% endblock %}
+
+{% block extra_head %}
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #f8f9fc;
+        --accent-color: #2e59d9;
+        --text-color: #5a5c69;
+    }
+    
+    body {
+        background-color: #f8f9fc;
+        color: var(--text-color);
+    }
+    
+    .category-sidebar {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        padding: 20px;
+        height: 100%;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .category-item {
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .category-item:hover {
+        background-color: var(--primary-color);
+    }
+    
+    .category-item a {
+        color: var(--text-color);
+        text-decoration: none;
+        display: block;
+        padding: 8px 12px;
+    }
+    
+    .category-item:hover a {
+        color: white;
+    }
+    
+    .category-item.active {
+        background-color: var(--primary-color);
+    }
+    
+    .category-item.active a {
+        color: white;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-img-container {
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2e2e2e;
+    }
+    
+    .product-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        flex-grow: 1;
+    }
+    
+    .product-price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+    
+    .product-rating {
+        color: #ffc107;
+        margin-bottom: 15px;
+    }
+    
+    .btn-details {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        align-self: flex-start;
+    }
+    
+    .btn-details:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+    }
+    
+    .page-title {
+        position: relative;
+        margin-bottom: 40px;
+        padding-bottom: 15px;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: var(--primary-color);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .page-item {
+        margin: 0 5px;
+    }
+    
+    .page-link {
+        color: var(--primary-color);
+        border: 1px solid #dee2e6;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .page-link:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .page-item.active .page-link {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    
+    .search-input {
+        padding: 12px 20px;
+        padding-right: 45px;
+        border-radius: 30px;
+        border: 1px solid #ddd;
+        width: 100%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .search-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--primary-color);
+    }
+    
+    .badge-category {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+    }
+    
+    .wishlist-btn {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(255,255,255,0.8);
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #dc3545;
+        transition: all 0.3s ease;
+    }
+    
+    .wishlist-btn:hover {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 50px 0;
+    }
+    
+    .empty-state img {
+        width: 150px;
+        opacity: 0.7;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 page-title animate__animated animate__fadeIn">Libros y Productos de Estudio</h2>
+    
+    <div class="row">
+        <!-- Sidebar de categorías -->
+        <div class="col-md-3 animate__animated animate__fadeInLeft">
+            <div class="category-sidebar">
+                <h4 class="mb-4"><i class="fas fa-filter me-2"></i>Filtrar por categoría</h4>
+                
+                <div class="search-box mb-4">
+                    <input type="text" class="search-input" placeholder="Buscar libros...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="category-item {% if not request.GET.categoria %}active{% endif %}">
+                        <a href="{% url 'estudio' %}"><i class="fas fa-book-open me-2"></i>Todos los productos</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'ficcion' %}active{% endif %}">
+                        <a href="?categoria=ficcion"><i class="fas fa-dragon me-2"></i>Ficción</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'no_ficcion' %}active{% endif %}">
+                        <a href="?categoria=no_ficcion"><i class="fas fa-globe-americas me-2"></i>No Ficción</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'educativo' %}active{% endif %}">
+                        <a href="?categoria=educativo"><i class="fas fa-graduation-cap me-2"></i>Educativo</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'ciencia' %}active{% endif %}">
+                        <a href="?categoria=ciencia"><i class="fas fa-atom me-2"></i>Ciencia</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'historia' %}active{% endif %}">
+                        <a href="?categoria=historia"><i class="fas fa-landmark me-2"></i>Historia</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'fantasia' %}active{% endif %}">
+                        <a href="?categoria=fantasia"><i class="fas fa-hat-wizard me-2"></i>Fantasía</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'romance' %}active{% endif %}">
+                        <a href="?categoria=romance"><i class="fas fa-heart me-2"></i>Romance</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'arte' %}active{% endif %}">
+                        <a href="?categoria=arte"><i class="fas fa-palette me-2"></i>Arte</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'misterio' %}active{% endif %}">
+                        <a href="?categoria=misterio"><i class="fas fa-search me-2"></i>Misterio</a>
+                    </div>
+                    <div class="category-item {% if request.GET.categoria == 'infantil' %}active{% endif %}">
+                        <a href="?categoria=infantil"><i class="fas fa-child me-2"></i>Infantil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de productos -->
+        <div class="col-md-9 animate__animated animate__fadeInRight">
+            {% if productos %}
+            <div class="row">
+                {% for producto in productos %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="product-card">
+                            <div class="product-img-container position-relative">
+                                <img src="{{ producto.imagen.url }}" class="product-img" alt="{{ producto.nombre }}">
+                                <button class="wishlist-btn" onclick="addToWishlist({{ producto.id }}, '{{ producto.nombre|escapejs }}')">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <span class="badge-category">{{ producto.get_categoria_display }}</span>
+                            </div>
+                            <div class="product-body">
+                                <h5 class="product-title">{{ producto.nombre }}</h5>
+                                <p class="product-description">{{ producto.descripcion|truncatewords:20 }}</p>
+                                <div class="product-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="text-muted ms-2">(24)</span>
+                                </div>
+                                <p class="product-price">${{ producto.precio }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'detalle_producto_estudio' producto.pk %}" class="btn-details">
+                                        <i class="fas fa-eye me-2"></i>Ver detalles
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="addToCart({{ producto.id }}, '{{ producto.nombre|escapejs }}')">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación mejorada -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if productos.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ productos.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in productos.paginator.page_range %}
+                        {% if productos.number == num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% elif num > productos.number|add:'-3' and num < productos.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if productos.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ productos.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ productos.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% else %}
+            <div class="empty-state">
+                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No hay productos">
+                <h4>No se encontraron productos</h4>
+                <p class="text-muted">No hay productos que coincidan con tu búsqueda</p>
+                <a href="{% url 'estudio' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-undo me-2"></i>Ver todos los productos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Función para añadir a lista de deseos
+    function addToWishlist(productId, productName) {
+        // Cambiar icono temporalmente para feedback visual
+        const heartIcon = event.currentTarget.querySelector('i');
+        heartIcon.classList.remove('far');
+        heartIcon.classList.add('fas');
+        
+        // Mostrar notificación
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Añadido a favoritos',
+            text: productName + ' se ha añadido a tu lista de deseos',
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true
+        });
+        
+        // Aquí iría la lógica AJAX para guardar en la base de datos
+        // fetch(`/wishlist/add/${productId}/`)
+        //   .then(response => response.json())
+        //   .then(data => console.log(data));
+    }
+    
+    // Función para añadir al carrito
+    function addToCart(productId, productName) {
+        event.stopPropagation();
+        
+        Swal.fire({
+            title: '¿Añadir al carrito?',
+            text: `¿Deseas añadir "${productName}" a tu carrito de compras?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#4e73df',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, añadir',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Simular petición AJAX
+                setTimeout(() => {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Producto añadido',
+                        text: `${productName} se ha añadido al carrito`,
+                        showConfirmButton: false,
+                        timer: 1500,
+                        toast: true
+                    });
+                    
+                    // Actualizar contador del carrito
+                    updateCartCounter();
+                }, 500);
+            }
+        });
+    }
+    
+    // Función para actualizar contador del carrito
+    function updateCartCounter() {
+        const cartCounter = document.getElementById('cart-count');
+        if (cartCounter) {
+            const current = parseInt(cartCounter.textContent) || 0;
+            cartCounter.textContent = current + 1;
+        }
+    }
+    
+    // Mostrar alerta de bienvenida
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!sessionStorage.getItem('booksWelcomeShown')) {
+            Swal.fire({
+                title: 'Bienvenido a nuestra librería',
+                text: 'Descubre nuestros libros y productos de estudio con hasta 20% de descuento',
+                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                imageWidth: 400,
+                imageAlt: 'Libros de estudio',
+                confirmButtonText: 'Explorar libros',
+                background: '#fff url(https://sweetalert2.github.io/images/trees.png)',
+                backdrop: `
+                    rgba(0,0,123,0.4)
+                    url("https://sweetalert2.github.io/images/nyan-cat.gif")
+                    left top
+                    no-repeat
+                `
+            });
+            sessionStorage.setItem('booksWelcomeShown', 'true');
+        }
+        
+        // Efecto de búsqueda (simulado)
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    Swal.fire({
+                        title: 'Búsqueda realizada',
+                        text: `Mostrando resultados para "${this.value}"`,
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+            
+            document.querySelector('.search-btn').addEventListener('click', function() {
+                Swal.fire({
+                    title: 'Búsqueda realizada',
+                    text: `Mostrando resultados para "${searchInput.value}"`,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

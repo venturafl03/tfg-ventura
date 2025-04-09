@@ -245,3 +245,22 @@ class PerfumeriaListView(ListView):
         if genero:
             queryset = queryset.filter(genero=genero)
         return queryset
+    
+
+## vista para los libros 
+class ProductoEstudioListView(ListView):
+    model = ProductoEstudio
+    template_name = 'centroonline/libreria/productos.html'
+    context_object_name = 'productos'
+    paginate_by = 10  
+    def get_queryset(self):
+        categoria = self.request.GET.get('categoria', None)
+        if categoria:
+            return ProductoEstudio.objects.filter(categoria=categoria)
+        return ProductoEstudio.objects.all()
+
+# Vista para mostrar el detalle de un producto
+class ProductoEstudioDetailView(DetailView):
+    model = ProductoEstudio
+    template_name = 'centroonline/libreria/detalle_producto.html'
+    context_object_name = 'producto'
