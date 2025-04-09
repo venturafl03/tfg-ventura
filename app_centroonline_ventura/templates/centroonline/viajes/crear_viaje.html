@@ -1,10 +1,230 @@
 {% extends 'centroonline/base.html' %}
 
+{% block title %}Crear Nuevo Viaje{% endblock %}
+
 {% block content %}
-  <h2>Crear un nuevo viaje</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Crear Viaje</button>
-  </form>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0"><i class="fas fa-plane mr-2"></i>Crear Nuevo Viaje</h2>
+        </div>
+        <div class="card-body">
+          <form method="POST" id="viajeForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+              <label for="id_nombre">Nombre del Viaje</label>
+              {{ form.nombre }}
+            </div>
+            
+            <div class="form-group">
+              <label for="id_descripcion">Descripción</label>
+              {{ form.descripcion }}
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_fecha_inicio">Fecha de Inicio</label>
+                  <div class="input-group date" id="datepickerInicio" data-provide="datepicker">
+                    {{ form.fecha_inicio }}
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_fecha_fin">Fecha de Fin</label>
+                  <div class="input-group date" id="datepickerFin" data-provide="datepicker">
+                    {{ form.fecha_fin }}
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="alert alert-info" id="duracionInfo">
+              Duración del viaje: <span id="diasViaje">0</span> días
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_pais">País</label>
+                  {{ form.pais }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="id_categoria">Categoría</label>
+                  {{ form.categoria }}
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save mr-2"></i>Guardar Viaje
+              </button>
+              <a href="{% url 'viaje' %}" class="btn btn-outline-secondary ml-2">
+                <i class="fas fa-times mr-2"></i>Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Incluir Bootstrap Datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+
+<script>
+$(document).ready(function(){
+  // Configuración del datepicker para fecha inicio
+  $('#datepickerInicio').datepicker({
+    format: 'dd/mm/yyyy',
+    language: 'es',
+    autoclose: true,
+    todayHighlight: true,
+    startDate: 'today',
+    todayBtn: "linked",  // Botón "Hoy"
+    clearBtn: true,      // Botón "Borrar"
+    toggleActive: true   // Para mostrar el calendario al hacer clic
+  });
+
+  // Configuración del datepicker para fecha fin
+  $('#datepickerFin').datepicker({
+    format: 'dd/mm/yyyy',
+    language: 'es',
+    autoclose: true,
+    todayHighlight: true,
+    startDate: 'today',
+    todayBtn: "linked",  // Botón "Hoy"
+    clearBtn: true,      // Botón "Borrar"
+    toggleActive: true   // Para mostrar el calendario al hacer clic
+  });
+
+  // Cuando cambia la fecha de inicio, actualizamos la fecha mínima de fin
+  $('#datepickerInicio').on('changeDate', function(e) {
+    $('#datepickerFin').datepicker('setStartDate', e.date);
+    calcularDuracion();
+  });
+
+  // Cuando cambia la fecha de fin, calculamos la duración
+  $('#datepickerFin').on('changeDate', function() {
+    calcularDuracion();
+  });
+
+  // Función para calcular la duración del viaje
+  function calcularDuracion() {
+    const inicio = $('#datepickerInicio').datepicker('getDate');
+    const fin = $('#datepickerFin').datepicker('getDate');
+    
+    if (inicio && fin) {
+      // Calcular diferencia en días
+      const diffTime = fin - inicio;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      
+      if (diffDays > 0) {
+        $('#diasViaje').text(diffDays);
+      } else {
+        $('#diasViaje').text('0');
+        alert('La fecha de fin debe ser posterior a la fecha de inicio');
+        $('#datepickerFin').datepicker('setDate', null);
+      }
+    }
+  }
+
+  // Validación del formulario
+  $('#viajeForm').submit(function(e) {
+    const inicio = $('#datepickerInicio').datepicker('getDate');
+    const fin = $('#datepickerFin').datepicker('getDate');
+    
+    if (!inicio) {
+      alert('Por favor seleccione una fecha de inicio');
+      e.preventDefault();
+      return false;
+    }
+    
+    if (!fin) {
+      alert('Por favor seleccione una fecha de fin');
+      e.preventDefault();
+      return false;
+    }
+    
+    if (fin <= inicio) {
+      alert('La fecha de fin debe ser posterior a la fecha de inicio');
+      e.preventDefault();
+      return false;
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.datepicker {
+  z-index: 1050 !important;
+}
+
+.input-group-text {
+  cursor: pointer;
+}
+
+#duracionInfo {
+  display: none;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.form-control, .input-group-text {
+  height: calc(2.25rem + 8px);
+}
+
+.input-group.date {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group-append {
+  background-color: #f0f0f0;
+  border: 1px solid #ced4da;
+  border-radius: 0 5px 5px 0;
+}
+
+.input-group-text {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+#duracionInfo {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #28a745;
+  display: none;
+}
+</style>
 {% endblock %}

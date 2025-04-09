@@ -43,7 +43,35 @@ class ViajeForm(forms.ModelForm):
     class Meta:
         model = Viaje
         fields = '__all__'
+        widgets = {
+            'fecha_inicio': forms.DateInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Seleccione fecha de inicio',
+                    'autocomplete': 'off'
+                }
+            ),
+            'fecha_fin': forms.DateInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Seleccione fecha de fin',
+                    'autocomplete': 'off'
+                }
+            ),
+            'descripcion': forms.Textarea(attrs={'rows': 3}),
+        }
         
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get("fecha_inicio")
+        fecha_fin = cleaned_data.get("fecha_fin")
+        
+        if fecha_inicio and fecha_fin:
+            if fecha_fin <= fecha_inicio:
+                raise forms.ValidationError(
+                    "La fecha de fin debe ser posterior a la fecha de inicio"
+                )
+        return cleaned_data
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
