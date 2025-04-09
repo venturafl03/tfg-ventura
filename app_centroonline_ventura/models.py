@@ -334,9 +334,9 @@ class Viaje(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    destino = models.CharField(max_length=255)
+    pais = models.ForeignKey('pais', related_name='pais', on_delete=models.CASCADE)
     categoria = models.ForeignKey('Categoria', on_delete=models.SET_NULL, null=True, blank=True)
-
+    
     def __str__(self):
         return self.nombre
 

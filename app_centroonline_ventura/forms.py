@@ -42,9 +42,9 @@ class ReservaForm(forms.ModelForm):
 class ViajeForm(forms.ModelForm):
     class Meta:
         model = Viaje
-        fields = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin', 'destino', 'categoria']
+        fields = '__all__'
         
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre']
+        fields = '__all__'

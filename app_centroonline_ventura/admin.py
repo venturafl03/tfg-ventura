@@ -19,8 +19,8 @@ from .models import (
     Perfumeria,
     ProductoEstudio,
     Viaje,
-  
-   
+    Pais,
+    Categoria,
 )
 
 # Registro de modelos en el admin
@@ -41,6 +41,8 @@ admin.site.register(ImagenProyecto)
 admin.site.register(Perfumeria)
 admin.site.register(ProductoEstudio)
 admin.site.register(Viaje)
+admin.site.register(Pais)
+admin.site.register(Categoria)
 
 
 
