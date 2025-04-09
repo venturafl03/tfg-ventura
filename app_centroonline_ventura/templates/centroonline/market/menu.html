@@ -6,14 +6,14 @@
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
         <h2 class="fw-bold text-primary">Productos Disponibles</h2>
-        <p class="text-muted">Explora nuestra amplia selección de productos</p>
+        <p class="text-muted">Explora nuestra amplia selección de productos para todos tus gustos.</p>
     </div>
     <div class="col-md-6 text-end">
         <form class="d-flex" method="get" action="">
-            <div class="input-group shadow-sm">
-                <input class="form-control border-primary" type="search" name="q" placeholder="Buscar productos..." aria-label="Search">
-                <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-search"></i> Buscar
+            <div class="input-group shadow-lg rounded-pill overflow-hidden">
+                <input class="form-control border-primary border-end-0 rounded-start-pill" type="search" name="q" placeholder="Buscar productos..." aria-label="Search">
+                <button class="btn btn-primary rounded-end-pill" type="submit">
+                    <i class="bi bi-search"></i>
                 </button>
             </div>
         </form>
@@ -23,19 +23,28 @@
     </div>
 </div>
 
+<!-- Filtros interactivos -->
+<div class="row mb-4">
+    <div class="col-12">
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+            <i class="bi bi-funnel-fill"></i> Filtros Avanzados
+        </button>
+    </div>
+</div>
+
 <div class="row g-4">
     {% for producto in productos %}
     <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 hover-shadow transition-all">
+        <div class="card h-100 shadow-lg border-0 rounded-3 hover-shadow-lg transition-all">
             <div class="position-relative">
-                <img src="{{ producto.imagen_principal.url }}" class="card-img-top img-fluid" alt="{{ producto.nombre }}" style="height: 200px; object-fit: cover;">
+                <img src="{{ producto.imagen_principal.url }}" class="card-img-top img-fluid" alt="{{ producto.nombre }}" style="height: 250px; object-fit: cover; border-radius: 0.25rem;">
                 {% if producto.nuevo %}
-                <span class="badge bg-danger position-absolute top-0 end-0 m-2">Nuevo</span>
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2 rounded-pill px-3 py-2">Nuevo</span>
                 {% endif %}
             </div>
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="card-title fw-bold">{{ producto.nombre }}</h5>
+                    <h5 class="card-title fw-bold text-truncate" style="max-width: 200px;">{{ producto.nombre }}</h5>
                     <span class="badge bg-info text-dark">{{ producto.categoria.nombre }}</span>
                 </div>
                 <div class="mb-2">
@@ -57,14 +66,14 @@
             </div>
             <div class="card-footer bg-white border-0 d-flex justify-content-between">
                 <a href="{% url 'detalle_producto' producto.pk %}" class="btn btn-outline-primary flex-grow-1 me-2">
-                    <i class="bi bi-eye-fill"></i> Detalles
+                    <i class="bi bi-eye-fill"></i> Ver detalles
                 </a>
             </div>
         </div>
     </div>
     {% empty %}
     <div class="col-12">
-        <div class="alert alert-info shadow-sm">
+        <div class="alert alert-info shadow-lg rounded-3">
             <div class="d-flex align-items-center">
                 <i class="bi bi-info-circle-fill me-3 fs-4"></i>
                 <div>
@@ -77,9 +86,10 @@
     {% endfor %}
 </div>
 
+<!-- Paginación -->
 {% if is_paginated %}
 <nav aria-label="Pagination" class="mt-5">
-    <ul class="pagination justify-content-center">
+    <ul class="pagination justify-content-center pagination-lg">
         {% if page_obj.has_previous %}
         <li class="page-item">
             <a class="page-link" href="?page=1" aria-label="First">
@@ -92,7 +102,7 @@
             </a>
         </li>
         {% endif %}
-        
+
         {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
             <li class="page-item active">
@@ -104,7 +114,7 @@
             </li>
             {% endif %}
         {% endfor %}
-        
+
         {% if page_obj.has_next %}
         <li class="page-item">
             <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
@@ -122,12 +132,6 @@
 {% endif %}
 
 <!-- Modal de Filtros -->
-<div class="text-center mt-3">
-    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtrosModal">
-        <i class="bi bi-funnel-fill"></i> Filtros Avanzados
-    </button>
-</div>
-
 <div class="modal fade" id="filtrosModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -174,4 +178,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
