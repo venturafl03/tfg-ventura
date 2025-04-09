@@ -280,24 +280,28 @@ class ViajeDetailView(DetailView):
     model = Viaje
     template_name = 'centroonline/viajes/detalle_viaje.html'
     context_object_name = 'viaje'
+    success_url = reverse_lazy('viaje')
 
 # Vista para crear un nuevo viaje
 class ViajeCreateView(CreateView):
     model = Viaje
     form_class = ViajeForm
     template_name = 'centroonline/viajes/crear_viaje.html'
-    success_url = reverse_lazy('viajes:lista_viajes')
+    success_url = reverse_lazy('viaje')
 
 # Vista para editar un viaje existente
 class ViajeUpdateView(UpdateView):
     model = Viaje
     form_class = ViajeForm
     template_name = 'centroonline/viajes/editar_viaje.html'
-    success_url = reverse_lazy('viajes:lista_viajes')
+    success_url = reverse_lazy('viaje')
+
 
 # Vista para eliminar un viaje
 class ViajeDeleteView(DeleteView):
     model = Viaje
     template_name = 'centroonline/viajes/eliminar_viaje.html'
     context_object_name = 'viaje'
-    success_url = reverse_lazy('viajes:lista_viajes')
+    success_url = reverse_lazy('viaje')
+
+

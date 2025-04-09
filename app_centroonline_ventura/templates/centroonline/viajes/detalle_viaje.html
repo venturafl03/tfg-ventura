@@ -1,10 +1,183 @@
 {% extends 'centroonline/base.html' %}
 
-{% block content %}
-  <h2>{{ viaje.nombre }}</h2>
-  <p>{{ viaje.descripcion }}</p>
-  <p><strong>Destino:</strong> {{ viaje.destino }}</p>
-  <p><strong>Fecha de inicio:</strong> {{ viaje.fecha_inicio }}</p>
-  <p><strong>Fecha de fin:</strong> {{ viaje.fecha_fin }}</p>
+{% block title %}{{ viaje.nombre }}{% endblock %}
 
+{% block content %}
+<div class="container mt-4">
+  <!-- Botón de volver -->
+  <a href="{% url 'viaje' %}" class="btn btn-outline-secondary mb-3">
+    <i class="fas fa-arrow-left"></i> Volver
+  </a>
+
+  <!-- Tarjeta principal -->
+  <div class="card shadow-lg">
+    <div class="row no-gutters">
+      <!-- Imagen del viaje -->
+      <div class="col-md-5">
+        <img src="https://via.placeholder.com/500x300?text={{ viaje.pais.nombre }}" 
+             class="card-img h-100" 
+             alt="{{ viaje.nombre }}"
+             style="object-fit: cover;">
+      </div>
+      
+      <!-- Detalles del viaje -->
+      <div class="col-md-7">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h2 class="card-title">{{ viaje.nombre }}</h2>
+              <p class="text-muted">
+                <i class="fas fa-map-marker-alt"></i> {{ viaje.pais.nombre }}
+                {% if viaje.categoria %}
+                <span class="badge badge-info ml-2">{{ viaje.categoria.nombre }}</span>
+                {% endif %}
+              </p>
+            </div>
+            <div class="text-right">
+              <button class="btn btn-sm btn-outline-secondary">
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Fechas interactivas -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="date-box p-3 bg-light rounded text-center">
+                <small class="text-muted">FECHA INICIO</small>
+                <h5 class="my-1">{{ viaje.fecha_inicio|date:"d M Y" }}</h5>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="date-box p-3 bg-light rounded text-center">
+                <small class="text-muted">FECHA FIN</small>
+                <h5 class="my-1">{{ viaje.fecha_fin|date:"d M Y" }}</h5>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Descripción con efecto "leer más" -->
+          <div class="mb-3">
+            <h5>Descripción</h5>
+            <div class="collapse" id="descripcionCollapse">
+              {{ viaje.descripcion }}
+            </div>
+            <a class="collapse-toggle" data-toggle="collapse" href="#descripcionCollapse">
+              <small>Mostrar más/menos</small>
+            </a>
+          </div>
+          
+          <!-- Botón de reserva -->
+          <button class="btn btn-primary btn-block mt-3">
+            <i class="fas fa-calendar-check mr-2"></i> Reservar este viaje
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sección de información adicional -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="fas fa-info-circle text-primary mr-2"></i> Detalles
+          </h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <i class="fas fa-clock text-muted mr-2"></i>
+              Duración: {{ viaje.duracion }} días
+            </li>
+            <li class="list-group-item">
+              <i class="fas fa-globe-americas text-muted mr-2"></i>
+              País: {{ viaje.pais.nombre }}
+            </li>
+            {% if viaje.categoria %}
+            <li class="list-group-item">
+              <i class="fas fa-tag text-muted mr-2"></i>
+              Categoría: {{ viaje.categoria.nombre }}
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="fas fa-map-marked-alt text-primary mr-2"></i> Ubicación
+          </h5>
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item rounded" 
+                    src="https://maps.google.com/maps?q={{ viaje.pais.nombre }}&output=embed"
+                    allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function(){
+  // Efecto hover para la imagen principal
+  $('.card-img').hover(
+    function() {
+      $(this).css('transform', 'scale(1.02)');
+    },
+    function() {
+      $(this).css('transform', 'scale(1)');
+    }
+  );
+  
+  // Alternar texto "Mostrar más/menos"
+  $('.collapse-toggle').click(function(){
+    if ($(this).text().includes("más")) {
+      $(this).html('<small>Mostrar menos</small>');
+    } else {
+      $(this).html('<small>Mostrar más</small>');
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 10px;
+}
+
+.card:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.date-box {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.date-box:hover {
+  background: #e9ecef !important;
+  transform: translateY(-3px);
+}
+
+.collapse-toggle {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.collapse-toggle:hover {
+  text-decoration: underline;
+}
+</style>
 {% endblock %}
