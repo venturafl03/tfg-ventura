@@ -15,32 +15,7 @@
                 <div class="mb-4">
                     <h5 class="text-primary">Pruebas solicitadas para este vehículo:</h5>
                     <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Cliente</th>
-                                    <th>Teléfono</th>
-                                    <th>Email</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for prueba in pruebas %}
-                                <tr>
-                                    <td>{{ prueba.fecha_test|date:"d/m/Y H:i" }}</td>
-                                    <td>{{ prueba.cliente.get_full_name|default:prueba.cliente.username }}</td>
-                                    <td>{{ prueba.cliente.telefono|default:"-" }}</td>
-                                    <td>{{ prueba.cliente.email }}</td>
-                                    <td>
-                                        <span class="badge {% if prueba.estado == 'pendiente' %}bg-warning{% elif prueba.estado == 'confirmado' %}bg-success{% else %}bg-secondary{% endif %}">
-                                            {{ prueba.get_estado_display }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                      
                     </div>
                 </div>
                 {% endif %}
@@ -74,12 +49,9 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Configuración mínima para la fecha (hoy)
         const now = new Date();
         const minDate = now.toISOString().slice(0, 16);
         document.getElementById('id_fecha_test').min = minDate;
-
-        // Opcional: Configurar máximo 30 días en el futuro
         const maxDate = new Date(now.setDate(now.getDate() + 30)).toISOString().slice(0, 16);
         document.getElementById('id_fecha_test').max = maxDate;
     });

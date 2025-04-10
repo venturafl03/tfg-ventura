@@ -80,28 +80,24 @@ class VehiculosReservadosListView(LoginRequiredMixin, ListView):
 
 class VehiculoDetailView(DetailView):
     model = Vehiculo
-    template_name = 'centroonline/vehiculos/detalle_vehiculo.html'  
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        vehiculo = self.object
-        
-        # Obtener reserva activa si existe
-        if vehiculo.reservado:
-            context['reserva_activa'] = vehiculo.reserva_set.filter(
-                fecha_fin__gte=timezone.now().date()
-            ).first()
-        
-        # Control de acceso para vehículos reservados
-        context['mostrar_detalles_completos'] = (
-            not vehiculo.reservado or 
-            self.request.user.is_staff or
-            (self.request.user.is_authenticated and 
-             vehiculo.reservado_por == self.request.user)
-        )
-        
-        return context
+    template_name = 'centroonline/vehiculos/detalle_vehiculo.html'
+    context_object_name = 'vehiculo'
 
+    def post(self, request, *args, **kwargs):
+        vehiculo = self.get_object()
+        
+        if vehiculo.reservado:
+            messages.error(request, f"El vehículo {vehiculo.marca} {vehiculo.modelo} ya está reservado.")
+            return self.get(request, *args, **kwargs)
+        
+        vehiculo.reservado = True
+        vehiculo.reservado_por = request.user
+        vehiculo.fecha_reserva = timezone.now()
+        vehiculo.save()
+        
+        messages.success(request, f"¡El vehículo {vehiculo.marca} {vehiculo.modelo} ha sido reservado con éxito por {request.user.get_full_name()}.")
+        
+        return self.get(request, *args, **kwargs) 
 class TestDriveCreateView(LoginRequiredMixin, CreateView):
     model = TestDrive
     form_class = TestDriveForm
