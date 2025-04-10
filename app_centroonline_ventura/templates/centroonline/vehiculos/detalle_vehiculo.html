@@ -46,13 +46,8 @@
             <h5>Descripción</h5>
             <p>{{ vehiculo.descripcion }}</p>
         </div>
-        
         <div class="mt-4">
-            {% if user.is_authenticated %}
-            <a href="{% url 'test_drive' vehiculo.pk %}" class="btn btn-warning btn-lg">Solicitar Prueba de Manejo</a>
-            {% else %}
-            <a href="{% url 'login' %}?next={% url 'test_drive' vehiculo.pk %}" class="btn btn-warning btn-lg">Inicia sesión para probar</a>
-            {% endif %}
+            <a href="{% url 'listado' %}" class="btn btn-primary">Volver al listado de vehículos</a>
         </div>
     </div>
 </div>

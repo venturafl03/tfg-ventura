@@ -35,6 +35,7 @@ class RegistroView(CreateView):
 
 # Vistas para Ventura Motors
 
+ 
 class LiberarVehiculoView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         """Solo permite acceso a usuarios staff"""

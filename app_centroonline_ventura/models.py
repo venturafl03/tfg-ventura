@@ -69,6 +69,7 @@ class Reserva(models.Model):
     comentarios = models.TextField(blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+  
 
     def __str__(self):
         return f'Reserva de {self.nombre} para {self.vehiculo}'
