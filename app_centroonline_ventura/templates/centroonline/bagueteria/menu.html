@@ -3,6 +3,7 @@
 {% block title %}Menú Premium | Baguetería Ventura{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <style>
     :root {
         --primary-color: #e67e22;
@@ -13,9 +14,9 @@
         --warning-color: #f39c12;
         --info-color: #3498db;
     }
-    
+
     .hero-section {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
                     url('https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
         background-size: cover;
         background-position: center;
@@ -23,8 +24,20 @@
         padding: 5rem 0;
         margin-bottom: 3rem;
         border-radius: 0 0 20px 20px;
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+
     .card-producto {
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         border-radius: 12px;
@@ -35,30 +48,31 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+        background-color: white;
     }
-    
+
     .card-producto:hover {
         transform: translateY(-8px);
         box-shadow: 0 12px 24px rgba(0,0,0,0.15);
     }
-    
+
     .producto-img-container {
         height: 220px;
         overflow: hidden;
         position: relative;
     }
-    
+
     .producto-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
     }
-    
+
     .card-producto:hover .producto-img {
         transform: scale(1.05);
     }
-    
+
     .badge-tipo {
         position: absolute;
         top: 15px;
@@ -70,23 +84,24 @@
         letter-spacing: 0.5px;
         text-transform: uppercase;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1;
     }
-    
+
     .tradicional {
         background-color: var(--warning-color);
         color: var(--dark-color);
     }
-    
+
     .integral {
         background-color: var(--success-color);
         color: white;
     }
-    
+
     .sin-gluten {
         background-color: #8e44ad;
         color: white;
     }
-    
+
     .categoria-titulo {
         position: relative;
         margin: 3rem 0 1.5rem;
@@ -94,7 +109,7 @@
         font-weight: 700;
         color: var(--dark-color);
     }
-    
+
     .categoria-titulo:after {
         content: "";
         position: absolute;
@@ -105,7 +120,7 @@
         background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
         border-radius: 2px;
     }
-    
+
     .btn-pedido {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         border: none;
@@ -116,104 +131,68 @@
         transition: all 0.3s ease;
         text-transform: uppercase;
         font-size: 0.75rem;
+        color: white;
     }
-    
+
     .btn-pedido:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        color: white;
     }
-    
+
     .precio {
         font-size: 1.25rem;
         font-weight: 700;
         color: var(--secondary-color);
     }
-    
+
     .card-body {
         flex: 1;
         display: flex;
         flex-direction: column;
     }
-    
+
     .card-text {
         flex: 1;
         color: #7f8c8d;
         font-size: 0.9rem;
         margin-bottom: 1rem;
     }
-    
+
     .filter-btn {
         border-radius: 50px;
         padding: 0.5rem 1.25rem;
         margin: 0 0.5rem 0.5rem 0;
         font-weight: 500;
         transition: all 0.3s ease;
-        border: 2px solid transparent;
+        border: 2px solid var(--primary-color);
+        background: transparent;
+        color: var(--dark-color);
     }
-    
+
     .filter-btn.active, .filter-btn:hover {
         background: var(--primary-color);
         color: white;
         border-color: var(--primary-color);
     }
-    
-    .floating-cart {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        z-index: 1000;
-        transition: all 0.3s ease;
-    }
-    
-    .floating-cart:hover {
-        transform: scale(1.1);
-    }
-    
-    .cart-btn {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
-        position: relative;
-    }
-    
-    .cart-count {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: var(--dark-color);
-        color: white;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-    
+
     .modal-content {
         border-radius: 15px;
         overflow: hidden;
         border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-    
+
     .modal-header {
         background-color: var(--dark-color);
         color: white;
         border-bottom: none;
     }
-    
+
     .btn-close {
         filter: invert(1);
     }
-    
+
     .ingredientes-list {
         list-style-type: none;
         padding-left: 0;
@@ -222,7 +201,7 @@
         gap: 0.5rem;
         margin-top: 1rem;
     }
-    
+
     .ingredientes-list li {
         background-color: var(--light-color);
         padding: 0.25rem 0.75rem;
@@ -230,13 +209,102 @@
         font-size: 0.75rem;
         color: var(--dark-color);
     }
-    
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--light-color);
+        border: none;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .quantity-btn:hover {
+        background-color: #ddd;
+    }
+
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        margin: 0 10px;
+        font-weight: bold;
+        border: 2px solid var(--light-color);
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .total-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--secondary-color);
+        margin-left: 10px;
+    }
+
+    .producto-favorito {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-size: 1.5rem;
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 1;
+    }
+
+    .producto-favorito:hover, .producto-favorito.active {
+        color: var(--secondary-color);
+        transform: scale(1.2);
+    }
+
+    .search-container {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .search-input {
+        padding-left: 40px;
+        border-radius: 50px;
+        border: 2px solid var(--light-color);
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(230, 126, 34, 0.25);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--dark-color);
+    }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+    }
+
     @media (max-width: 768px) {
         .hero-section {
             padding: 3rem 0;
             border-radius: 0;
         }
-        
+
         .categoria-titulo {
             margin: 2rem 0 1rem;
         }
@@ -246,48 +314,90 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section animate__animated animate__fadeIn">
     <div class="container text-center">
-        <h1 class="display-4 fw-bold mb-3">Baguetería Ventura</h1>
-        <p class="lead mb-4">Experiencias gastronómicas artesanales con los mejores ingredientes</p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="#menu" class="btn btn-primary btn-lg px-4">Ver Menú</a>
+        <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">Baguetería Ventura</h1>
+        <p class="lead mb-4 animate__animated animate__fadeIn animate__delay-1s">Experiencias gastronómicas artesanales con los mejores ingredientes</p>
+        <div class="d-flex justify-content-center gap-3 animate__animated animate__fadeInUp animate__delay-1s">
+            <a href="#menu" class="btn btn-primary btn-lg px-4 me-2">Ver Menú</a>
+            <a href="#ofertas" class="btn btn-outline-light btn-lg px-4">Ofertas Especiales</a>
         </div>
     </div>
 </section>
 
+<!-- Toast Notifications -->
+<div class="toast-container">
+    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Producto añadido al carrito!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <!-- Main Menu -->
 <div class="container" id="menu">
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="form-control search-input" placeholder="Buscar productos...">
+            </div>
+        </div>
+    </div>
+
     <!-- Filtros -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex flex-wrap justify-content-center">
-                <a href="?tipo=" 
+                <a href="?tipo="
                    class="filter-btn {% if not request.GET.tipo %}active{% endif %}">
-                   Todos
+                   <i class="fas fa-bread-slice me-2"></i>Todos
                 </a>
-                <a href="?tipo=TRADICIONAL" 
+                <a href="?tipo=TRADICIONAL"
                    class="filter-btn {% if request.GET.tipo == 'TRADICIONAL' %}active{% endif %}">
-                   Tradicional
+                   <i class="fas fa-wheat-alt me-2"></i>Tradicional
                 </a>
-                <a href="?tipo=INTEGRAL" 
+                <a href="?tipo=INTEGRAL"
                    class="filter-btn {% if request.GET.tipo == 'INTEGRAL' %}active{% endif %}">
-                   Integral
+                   <i class="fas fa-seedling me-2"></i>Integral
                 </a>
-                <a href="?tipo=SIN_GLUTEN" 
+                <a href="?tipo=SIN_GLUTEN"
                    class="filter-btn {% if request.GET.tipo == 'SIN_GLUTEN' %}active{% endif %}">
-                   Sin Gluten
+                   <i class="fas fa-allergies me-2"></i>Sin Gluten
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Special Offers Section -->
+    <div class="row mb-5" id="ofertas">
+        <div class="col-12">
+            <h2 class="categoria-titulo animate__animated animate__fadeIn">Ofertas Especiales</h2>
+        </div>
+
+        <div class="col-12">
+            <div class="alert alert-warning animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-fire me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h4 class="mb-1">¡Oferta del día!</h4>
+                        <p class="mb-0">Hoy todos nuestros productos integrales tienen un 15% de descuento</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% regroup productos by categoria as categorias_list %}
-    
+
     {% for categoria in categorias_list %}
     <div class="row">
         <div class="col-12">
-            <h2 class="categoria-titulo">{{ categoria.grouper.nombre }}</h2>
+            <h2 class="categoria-titulo animate__animated animate__fadeIn">{{ categoria.grouper.nombre }}</h2>
             {% if categoria.grouper.descripcion %}
             <p class="text-muted">{{ categoria.grouper.descripcion }}</p>
             {% endif %}
@@ -296,9 +406,10 @@
 
     <div class="row g-4">
         {% for producto in categoria.list %}
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-producto">
+        <div class="col-lg-4 col-md-6 producto-item" data-tipo="{{ producto.tipo_pan|lower }}" data-nombre="{{ producto.nombre|lower }}">
+            <div class="card card-producto animate__animated animate__fadeIn">
                 <div class="producto-img-container">
+                    <i class="far fa-heart producto-favorito" onclick="toggleFavorito(this)"></i>
                     <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
                     <span class="badge-tipo {{ producto.tipo_pan|lower|cut:' ' }}">
                         {{ producto.get_tipo_pan_display }}
@@ -307,10 +418,15 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="card-title mb-0">{{ producto.nombre }}</h5>
-                        <span class="precio">${{ producto.precio }}</span>
+                        <div>
+                            {% if producto.tipo_pan == 'INTEGRAL' %}
+                            <span class="text-decoration-line-through text-muted me-2">${{ producto.precio|add:2 }}</span>
+                            {% endif %}
+                            <span class="precio">${{ producto.precio }}</span>
+                        </div>
                     </div>
                     <p class="card-text">{{ producto.descripcion }}</p>
-                    
+
                     {% if producto.ingredientes %}
                     <ul class="ingredientes-list">
                         {% for ingrediente in producto.ingredientes.splitlines %}
@@ -318,51 +434,11 @@
                         {% endfor %}
                     </ul>
                     {% endif %}
-                    
+
                     <div class="mt-auto pt-3">
-                        <button class="btn btn-pedido w-100" data-bs-toggle="modal" 
-                                data-bs-target="#modalPedido{{ producto.id }}">
+                        <button class="btn btn-pedido w-100" onclick="prepararPedido('{{ producto.id }}', '{{ producto.nombre }}', {{ producto.precio }})">
                             <i class="fas fa-plus-circle me-2"></i>Añadir al pedido
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal para pedido -->
-        <div class="modal fade" id="modalPedido{{ producto.id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Personalizar pedido</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="d-flex align-items-center mb-4">
-                            <img src="{{ producto.imagen.url }}" class="rounded me-3" width="80" height="80" style="object-fit: cover;">
-                            <div>
-                                <h6 class="mb-1">{{ producto.nombre }}</h6>
-                                <p class="text-muted mb-0">${{ producto.precio }}</p>
-                            </div>
-                        </div>
-                        
-                        <form method="post" action="{% url 'nuevo_pedido' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                            
-                        
-                            
-                            <div class="mb-4">
-                                <label for="notas{{ producto.id }}" class="form-label fw-bold">Instrucciones especiales</label>
-                                <textarea class="form-control" id="notas{{ producto.id }}" 
-                                          name="notas" rows="3" placeholder="Ej: Sin mayonesa, extra de jamón..."></textarea>
-                            </div>
-                            
-                            <form method="post" action="{% url 'carrito'  %}">
-                                {% csrf_token %}
-                                <button type="submit">Añadir al carrito</button>
-                            </form>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -370,26 +446,18 @@
         {% endfor %}
     </div>
     {% empty %}
-    <div class="col-12 text-center py-5">
+    <div class="col-12 text-center py-5 animate__animated animate__fadeIn">
         <div class="alert alert-info">No hay productos disponibles con los filtros seleccionados.</div>
         <a href="?tipo=" class="btn btn-primary">Ver todo el menú</a>
     </div>
     {% endfor %}
 </div>
-
-<!-- Carrito flotante -->
-{% if user.is_authenticated %}
-<div class="floating-cart">
-    <a href="{% url 'nuevo_pedido' %}" class="cart-btn">
-        <i class="fas fa-shopping-bag"></i>
-        <span class="cart-count">{{ request.user.pedido_set.count }}</span>
-    </a>
-</div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Animaciones al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     // Animación para las cards
     const cards = document.querySelectorAll('.card-producto');
@@ -397,36 +465,197 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transitionDelay = `${index * 0.1}s`;
-        
+
         setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
         }, 100);
     });
-    
-    // Actualizar total en modal cuando cambia cantidad
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('change', function() {
-            const productId = this.id.replace('cantidad', '');
-            const price = parseFloat('{{ producto.precio }}');
-            const quantity = parseInt(this.value) || 1;
-            document.getElementById('total' + productId).textContent = (price * quantity).toFixed(2);
-        });
+
+    // Inicializar tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    // Cargar favoritos del localStorage
+    loadFavorites();
 });
 
-function increment(id) {
-    const input = document.getElementById('cantidad' + id);
+// Función para mostrar alerta de login
+function showLoginAlert() {
+    Swal.fire({
+        title: 'Inicia sesión',
+        text: 'Debes iniciar sesión para realizar pedidos',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#e67e22',
+        cancelButtonColor: '#7f8c8d',
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{% url 'login' %}";
+        }
+    });
+}
+
+// Función para preparar pedido con SweetAlert
+function prepararPedido(productoId, productoNombre, productoPrecio) {
+    {% if not user.is_authenticated %}
+        showLoginAlert();
+        return;
+    {% endif %}
+
+    Swal.fire({
+        title: `Añadir ${productoNombre}`,
+        html: `
+            <div class="text-start mb-3">
+                <p class="mb-2">Precio unitario: <strong>$${productoPrecio.toFixed(2)}</strong></p>
+            </div>
+            <div class="quantity-selector mb-4">
+                <button type="button" class="quantity-btn" onclick="decrementQuantity()">-</button>
+                <input type="number" id="swalQuantity" class="quantity-input" value="1" min="1" max="10">
+                <button type="button" class="quantity-btn" onclick="incrementQuantity()">+</button>
+                <span class="total-price">Total: $<span id="swalTotal">${productoPrecio.toFixed(2)}</span></span>
+            </div>
+            <div class="mb-3">
+                <label for="swalNotas" class="form-label">Instrucciones especiales</label>
+                <textarea id="swalNotas" class="form-control" rows="2" placeholder="Ej: Sin mayonesa, extra de jamón..."></textarea>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#e67e22',
+        cancelButtonColor: '#7f8c8d',
+        confirmButtonText: 'Añadir al carrito',
+        cancelButtonText: 'Cancelar',
+        focusConfirm: false,
+        preConfirm: () => {
+            const quantity = parseInt(document.getElementById('swalQuantity').value);
+            const notas = document.getElementById('swalNotas').value;
+
+            if (isNaN(quantity)) {
+                Swal.showValidationMessage('La cantidad debe ser un número');
+                return false;
+            }
+
+            return { quantity, notas };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Aquí iría la llamada AJAX para añadir al carrito
+            const { quantity, notas } = result.value;
+
+            // Simulamos la respuesta del servidor
+            setTimeout(() => {
+                // Mostrar notificación toast
+                const toastLiveExample = document.getElementById('liveToast');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
+
+                // Mostrar confirmación
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `${quantity} ${productoNombre} añadido(s)`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }, 500);
+        }
+    });
+
+    // Actualizar total cuando cambia la cantidad
+    document.getElementById('swalQuantity').addEventListener('change', function() {
+        const quantity = parseInt(this.value) || 1;
+        document.getElementById('swalTotal').textContent = (productoPrecio * quantity).toFixed(2);
+    });
+}
+
+function incrementQuantity() {
+    const input = document.getElementById('swalQuantity');
     input.value = parseInt(input.value) + 1;
     input.dispatchEvent(new Event('change'));
 }
 
-function decrement(id) {
-    const input = document.getElementById('cantidad' + id);
+function decrementQuantity() {
+    const input = document.getElementById('swalQuantity');
     if (parseInt(input.value) > 1) {
         input.value = parseInt(input.value) - 1;
         input.dispatchEvent(new Event('change'));
     }
 }
+
+// Función para favoritos
+function toggleFavorito(icon) {
+    icon.classList.toggle('active');
+    icon.classList.toggle('far');
+    icon.classList.toggle('fas');
+
+    // Guardar en localStorage
+    const card = icon.closest('.card-producto');
+    const productId = card.querySelector('.btn-pedido').getAttribute('onclick').split("'")[1];
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    if (icon.classList.contains('active')) {
+        if (!favorites.includes(productId)) {
+            favorites.push(productId);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Añadido a favoritos',
+                showConfirmButton: false,
+                timer: 1000
+            });
+        }
+    } else {
+        const index = favorites.indexOf(productId);
+        if (index > -1) {
+            favorites.splice(index, 1);
+        }
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function loadFavorites() {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    document.querySelectorAll('.producto-favorito').forEach(icon => {
+        const card = icon.closest('.card-producto');
+        const productId = card.querySelector('.btn-pedido').getAttribute('onclick').split("'")[1];
+
+        if (favorites.includes(productId)) {
+            icon.classList.add('active', 'fas');
+            icon.classList.remove('far');
+        }
+    });
+}
+
+// Búsqueda en tiempo real
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const productItems = document.querySelectorAll('.producto-item');
+
+    productItems.forEach(item => {
+        const productName = item.getAttribute('data-nombre');
+        if (productName.includes(searchTerm)) {
+            item.style.display = 'block';
+            item.querySelector('.card-producto').classList.add('animate__fadeIn');
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+// Efecto de scroll suave
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
 </script>
 {% endblock %}

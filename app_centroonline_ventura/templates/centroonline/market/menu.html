@@ -1,136 +1,655 @@
 {% extends 'centroonline/base.html' %}
 
-{% block title %}Productos Disponibles{% endblock %}
+{% block title %}Market Ventura - Tienda Premium{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #e74c3c;
+        --accent-color: #3498db;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+    }
+    
+    /* Hero Section */
+    .hero-market {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 20px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-market::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    /* Product Cards */
+    .product-card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        position: relative;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    
+    .product-img-container {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    
+    .badge-new {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    .badge-discount {
+        background-color: var(--success-color);
+        color: white;
+    }
+    
+    .badge-category {
+        background-color: var(--accent-color);
+        color: white;
+    }
+    
+    /* Product Actions */
+    .product-actions {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        display: flex;
+        flex-direction: column;
+        z-index: 1;
+    }
+    
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.9);
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .action-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .action-btn.active {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    /* Price Styles */
+    .price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+    }
+    
+    .old-price {
+        text-decoration: line-through;
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+    
+    /* Rating Stars */
+    .rating-stars {
+        color: var(--warning-color);
+        font-size: 0.9rem;
+    }
+    
+    /* Search & Filters */
+    .search-container {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+    
+    .search-input {
+        padding-left: 45px;
+        border-radius: 50px;
+        border: 2px solid var(--light-color);
+        transition: all 0.3s;
+        height: 50px;
+    }
+    
+    .search-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--dark-color);
+        font-size: 1.2rem;
+    }
+    
+    .filter-btn {
+        border-radius: 50px;
+        padding: 0.5rem 1.25rem;
+        margin: 0 0.5rem 0.5rem 0;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid var(--light-color);
+        background: transparent;
+        color: var(--dark-color);
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Floating Cart */
+    .floating-cart {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    
+    .floating-cart:hover {
+        transform: scale(1.1);
+    }
+    
+    .cart-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        position: relative;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+        }
+    }
+    
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--dark-color);
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    
+    /* Quick View Modal */
+    .quickview-modal .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .quickview-modal .modal-header {
+        background-color: var(--primary-color);
+        color: white;
+        border-bottom: none;
+    }
+    
+    .quickview-modal .btn-close {
+        filter: invert(1);
+    }
+    
+    /* Quantity Selector */
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--light-color);
+        border: none;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .quantity-btn:hover {
+        background-color: #ddd;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        margin: 0 10px;
+        font-weight: bold;
+        border: 2px solid var(--light-color);
+        border-radius: 5px;
+        padding: 5px;
+    }
+    
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-market {
+            padding: 4rem 0;
+            border-radius: 0;
+        }
+        
+        .floating-cart {
+            bottom: 1rem;
+            right: 1rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row mb-4 align-items-center">
-    <div class="col-md-6">
-        <h2 class="fw-bold text-primary">Productos Disponibles</h2>
-        <p class="text-muted">Explora nuestra amplia selección de productos para todos tus gustos.</p>
+<!-- Hero Section -->
+<section class="hero-market animate__animated animate__fadeIn">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">Market Ventura</h1>
+        <p class="lead mb-4 animate__animated animate__fadeIn animate__delay-1s">Productos frescos y de calidad para tu hogar</p>
+        <div class="d-flex justify-content-center gap-3 animate__animated animate__fadeInUp animate__delay-1s">
+            <a href="#productos" class="btn btn-primary btn-lg px-4 me-2">
+                <i class="bi bi-cart3 me-2"></i>Comprar ahora
+            </a>
+            <a href="#ofertas" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-tag-fill me-2"></i>Ofertas
+            </a>
+        </div>
     </div>
-    <div class="col-md-6 text-end">
-        <form class="d-flex" method="get" action="">
-            <div class="input-group shadow-lg rounded-pill overflow-hidden">
-                <input class="form-control border-primary border-end-0 rounded-start-pill" type="search" name="q" placeholder="Buscar productos..." aria-label="Search">
-                <button class="btn btn-primary rounded-end-pill" type="submit">
-                    <i class="bi bi-search"></i>
-                </button>
+</section>
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Producto añadido al carrito!
             </div>
-        </form>
-        <div class="mt-2">
-            <small class="text-muted">{{ productos.count }} productos encontrados</small>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
 
-<!-- Filtros interactivos -->
-<div class="row mb-4">
-    <div class="col-12">
-        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtrosModal">
-            <i class="bi bi-funnel-fill"></i> Filtros Avanzados
-        </button>
+<!-- Main Content -->
+<div class="container" id="productos">
+    <!-- Search Bar -->
+    <div class="search-container animate__animated animate__fadeIn">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="searchInput" class="form-control search-input" placeholder="Buscar productos...">
+        <div class="mt-2 text-center">
+            <small class="text-muted">{{ productos.count }} productos disponibles</small>
+        </div>
     </div>
-</div>
-
-<div class="row g-4">
-    {% for producto in productos %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-lg border-0 rounded-3 hover-shadow-lg transition-all">
-            <div class="position-relative">
-                <img src="{{ producto.imagen_principal.url }}" class="card-img-top img-fluid" alt="{{ producto.nombre }}" style="height: 250px; object-fit: cover; border-radius: 0.25rem;">
-                {% if producto.nuevo %}
-                <span class="badge bg-danger position-absolute top-0 end-0 m-2 rounded-pill px-3 py-2">Nuevo</span>
-                {% endif %}
+    
+    <!-- Filters -->
+    <div class="row mb-4 animate__animated animate__fadeIn">
+        <div class="col-12">
+            <div class="d-flex flex-wrap justify-content-center">
+                <a href="?categoria=" 
+                   class="filter-btn {% if not request.GET.categoria %}active{% endif %}">
+                   <i class="bi bi-grid-fill me-2"></i>Todos
+                </a>
+                {% for categoria in categorias %}
+                <a href="?categoria={{ categoria.id }}" 
+                   class="filter-btn {% if request.GET.categoria == categoria.id|stringformat:'s' %}active{% endif %}">
+                   <i class="bi {{ categoria.icono|default:'bi-tag-fill' }} me-2"></i>{{ categoria.nombre }}
+                </a>
+                {% endfor %}
             </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="card-title fw-bold text-truncate" style="max-width: 200px;">{{ producto.nombre }}</h5>
-                    <span class="badge bg-info text-dark">{{ producto.categoria.nombre }}</span>
+        </div>
+    </div>
+
+    <!-- Special Offers -->
+    <div class="row mb-5 animate__animated animate__fadeIn" id="ofertas">
+        <div class="col-12">
+            <h2 class="categoria-titulo">
+                <i class="bi bi-tag-fill me-2 text-danger"></i>Ofertas Especiales
+            </h2>
+        </div>
+        
+        <div class="col-12">
+            <div class="alert alert-warning animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-lightning-charge-fill me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h4 class="mb-1">¡Ofertas Relámpago!</h4>
+                        <p class="mb-0">Hasta 30% de descuento en productos seleccionados - Solo hoy!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row g-4">
+        {% for producto in productos %}
+        <div class="col-lg-4 col-md-6 producto-item animate__animated animate__fadeIn" 
+             data-categoria="{{ producto.categoria.id }}" 
+             data-nombre="{{ producto.nombre|lower }}"
+             data-precio="{{ producto.precio }}"
+             {% if producto.nuevo %}data-nuevo="true"{% endif %}>
+            <div class="card product-card">
+                <!-- Product Actions -->
+                <div class="product-actions">
+                    <button class="action-btn" onclick="toggleFavorito(this, '{{ producto.id }}')">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    <button class="action-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal{{ producto.id }}">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
                 
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="text-primary fw-bold mb-0">${{ producto.precio|floatformat:2 }}</h4>
-                    {% if producto.stock > 0 %}
-                    <span class="text-success"><i class="bi bi-check-circle-fill"></i> Disponible</span>
-                    {% else %}
-                    <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Agotado</span>
+                <!-- Product Image -->
+                <div class="product-img-container">
+                    <img src="{{ producto.imagen_principal.url }}" class="product-img" alt="{{ producto.nombre }}">
+                    
+                    <!-- Badges -->
+                    {% if producto.nuevo %}
+                    <span class="product-badge badge-new">Nuevo</span>
+                    {% endif %}
+                    {% if producto.descuento %}
+                    <span class="product-badge badge-discount">-{{ producto.descuento }}%</span>
                     {% endif %}
                 </div>
-                <hr>
-                <div class="d-flex justify-content-between">
-                    <span><i class="bi bi-box"></i> {{ producto.stock }} unidades</span>
-                    <span><i class="bi bi-star-fill text-warning"></i> {{ producto.valoracion|default:"0" }}/5</span>
+                
+                <!-- Product Body -->
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold">{{ producto.nombre }}</h5>
+                        <span class="badge bg-info">{{ producto.categoria.nombre }}</span>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="mb-3">
+                        {% if producto.descuento %}
+                        <span class="old-price me-2">${{ producto.precio|floatformat:2 }}</span>
+                        <span class="price">${{ producto.get_precio_descuento|floatformat:2 }}</span>
+                        {% else %}
+                        <span class="price">${{ producto.precio|floatformat:2 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Rating -->
+                    <div class="rating-stars mb-3">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= producto.valoracion %}
+                            <i class="bi bi-star-fill"></i>
+                            {% else %}
+                            <i class="bi bi-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <small class="text-muted ms-2">({{ producto.reviews.count }})</small>
+                    </div>
+                    
+                    <!-- Stock -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        {% if producto.stock > 0 %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Disponible</span>
+                        {% else %}
+                        <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Agotado</span>
+                        {% endif %}
+                        <span class="text-muted"><i class="bi bi-box-seam"></i> {{ producto.stock }} en stock</span>
+                    </div>
+                    
+                    <!-- Add to Cart Button -->
+                    <button class="btn btn-primary w-100 mt-auto" 
+                            onclick="addToCart('{{ producto.id }}', '{{ producto.nombre }}', {{ producto.get_precio_final|floatformat:2 }})">
+                        <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+                    </button>
                 </div>
             </div>
-            <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                <a href="{% url 'detalle_producto' producto.pk %}" class="btn btn-outline-primary flex-grow-1 me-2">
-                    <i class="bi bi-eye-fill"></i> Ver detalles
-                </a>
-            </div>
         </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="alert alert-info shadow-lg rounded-3">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-info-circle-fill me-3 fs-4"></i>
-                <div>
-                    <h5 class="alert-heading">No hay productos disponibles</h5>
-                    <p class="mb-0">Por favor intenta con otros criterios de búsqueda o visita más tarde.</p>
+
+        <!-- Quick View Modal -->
+        <div class="modal fade quickview-modal" id="quickViewModal{{ producto.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ producto.nombre }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="{{ producto.imagen_principal.url }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
+                                <div class="d-flex mt-3">
+                                    {% if producto.imagen_secundaria %}
+                                    <img src="{{ producto.imagen_secundaria.url }}" class="img-thumbnail me-2" width="80" alt="Vista 2">
+                                    {% endif %}
+                                    {% if producto.imagen_terciaria %}
+                                    <img src="{{ producto.imagen_terciaria.url }}" class="img-thumbnail" width="80" alt="Vista 3">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <span class="badge bg-info">{{ producto.categoria.nombre }}</span>
+                                        <div class="rating-stars mt-2">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= producto.valoracion %}
+                                                <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                <i class="bi bi-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="text-muted ms-2">({{ producto.reviews.count }} reseñas)</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        {% if producto.descuento %}
+                                        <span class="old-price d-block">${{ producto.precio|floatformat:2 }}</span>
+                                        <span class="price">${{ producto.get_precio_descuento|floatformat:2 }}</span>
+                                        {% else %}
+                                        <span class="price">${{ producto.precio|floatformat:2 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <p>{{ producto.descripcion }}</p>
+                                
+                                <div class="mb-4">
+                                    <h6>Características:</h6>
+                                    <ul>
+                                        {% for caracteristica in producto.caracteristicas.splitlines %}
+                                        <li>{{ caracteristica }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                
+                                <div class="quantity-selector mb-4">
+                                    <button type="button" class="quantity-btn" onclick="decrementQuantity('modal{{ producto.id }}')">-</button>
+                                    <input type="number" id="quantityModal{{ producto.id }}" class="quantity-input" value="1" min="1" max="10">
+                                    <button type="button" class="quantity-btn" onclick="incrementQuantity('modal{{ producto.id }}')">+</button>
+                                    <span class="total-price">Total: $<span id="totalModal{{ producto.id }}">{{ producto.get_precio_final|floatformat:2 }}</span></span>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" 
+                                            onclick="addToCart('{{ producto.id }}', '{{ producto.nombre }}', {{ producto.get_precio_final|floatformat:2 }}, $('#quantityModal{{ producto.id }}').val())">
+                                        <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+                                    </button>
+                                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                        <i class="bi bi-arrow-left me-2"></i>Seguir comprando
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 animate__animated animate__fadeIn">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill me-2"></i> No hay productos disponibles con los filtros seleccionados.
+            </div>
+            <a href="?" class="btn btn-primary">Ver todo el catálogo</a>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-
-<!-- Paginación -->
-{% if is_paginated %}
-<nav aria-label="Pagination" class="mt-5">
-    <ul class="pagination justify-content-center pagination-lg">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page=1" aria-label="First">
-                <span aria-hidden="true">&laquo;&laquo;</span>
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <li class="page-item active">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-            </li>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Pagination" class="mt-5">
+        <ul class="pagination justify-content-center pagination-lg">
+            {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
             </li>
             {% endif %}
-        {% endfor %}
 
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                <span aria-hidden="true">&raquo;&raquo;</span>
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Floating Cart -->
+{% if user.is_authenticated %}
+<div class="floating-cart animate__animated animate__fadeInUp animate__delay-1s">
+    <a href="{% url 'carrito' %}" class="cart-btn" id="cartButton">
+        <i class="bi bi-cart-fill"></i>
+        <span class="cart-count" id="cartCount">{{ request.user.carrito.items.count }}</span>
+    </a>
+</div>
+{% else %}
+<div class="floating-cart animate__animated animate__fadeInUp animate__delay-1s">
+    <a href="#" class="cart-btn" onclick="showLoginAlert()">
+        <i class="bi bi-cart-fill"></i>
+        <span class="cart-count">0</span>
+    </a>
+</div>
 {% endif %}
 
-<!-- Modal de Filtros -->
-<div class="modal fade" id="filtrosModal" tabindex="-1" aria-hidden="true">
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -138,7 +657,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="get">
+                <form method="get" id="filterForm">
                     <div class="mb-3">
                         <label class="form-label">Rango de Precio</label>
                         <div class="row">
@@ -170,11 +689,250 @@
                             <option value="valoracion">Mejor valorados</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="nuevos" id="nuevosCheck">
+                            <label class="form-check-label" for="nuevosCheck">
+                                Solo productos nuevos
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="ofertas" id="ofertasCheck">
+                            <label class="form-check-label" for="ofertasCheck">
+                                Solo productos en oferta
+                            </label>
+                        </div>
+                    </div>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="applyFilters()">Aplicar Filtros</button>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Animaciones al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación para las cards
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transitionDelay = `${index * 0.1}s`;
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    });
+    
+    // Cargar favoritos del localStorage
+    loadFavorites();
+});
+
+// Función para mostrar alerta de login
+function showLoginAlert() {
+    Swal.fire({
+        title: 'Inicia sesión',
+        text: 'Debes iniciar sesión para realizar pedidos',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#2c3e50',
+        cancelButtonColor: '#7f8c8d',
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cancelar',
+        backdrop: 'rgba(0,0,0,0.4)'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{% url 'login' %}?next={{ request.path }}";
+        }
+    });
+}
+
+// Función para añadir al carrito
+function addToCart(productId, productName, productPrice, quantity = 1) {
+    {% if not user.is_authenticated %}
+        showLoginAlert();
+        return;
+    {% endif %}
+    
+    // Mostrar animación de carga
+    Swal.fire({
+        title: 'Añadiendo al carrito...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    // Simular llamada AJAX al servidor
+    setTimeout(() => {
+        Swal.close();
+        
+        // Mostrar notificación toast
+        const toastLiveExample = document.getElementById('liveToast');
+        const toast = new bootstrap.Toast(toastLiveExample);
+        toast.show();
+        
+        // Actualizar contador del carrito
+        updateCartCount(parseInt(quantity));
+        
+        // Mostrar confirmación
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: `${quantity} ${productName} añadido(s)`,
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true
+        });
+    }, 800);
+}
+
+// Actualizar contador del carrito
+function updateCartCount(quantityToAdd) {
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) {
+        const currentCount = parseInt(cartCount.textContent) || 0;
+        cartCount.textContent = currentCount + quantityToAdd;
+        
+        // Animación
+        cartCount.classList.add('animate__animated', 'animate__bounce');
+        setTimeout(() => {
+            cartCount.classList.remove('animate__animated', 'animate__bounce');
+        }, 1000);
+    }
+}
+
+// Funciones para cantidad
+function incrementQuantity(prefix = '') {
+    const input = document.getElementById(`quantity${prefix}`);
+    input.value = parseInt(input.value) + 1;
+    updateTotal(prefix);
+}
+
+function decrementQuantity(prefix = '') {
+    const input = document.getElementById(`quantity${prefix}`);
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+        updateTotal(prefix);
+    }
+}
+
+function updateTotal(prefix = '') {
+    const input = document.getElementById(`quantity${prefix}`);
+    const price = parseFloat(document.getElementById(`total${prefix}`).textContent) / (parseInt(input.value) || 1);
+    const quantity = parseInt(input.value) || 1;
+    document.getElementById(`total${prefix}`).textContent = (price * quantity).toFixed(2);
+}
+
+// Función para favoritos
+function toggleFavorito(icon, productId) {
+    icon.classList.toggle('active');
+    
+    // Cambiar icono
+    const heartIcon = icon.querySelector('i');
+    if (icon.classList.contains('active')) {
+        heartIcon.classList.remove('bi-heart');
+        heartIcon.classList.add('bi-heart-fill');
+    } else {
+        heartIcon.classList.remove('bi-heart-fill');
+        heartIcon.classList.add('bi-heart');
+    }
+    
+    // Guardar en localStorage
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    
+    if (icon.classList.contains('active')) {
+        if (!favorites.includes(productId)) {
+            favorites.push(productId);
+            showFavoriteToast('Añadido a favoritos', 'success');
+        }
+    } else {
+        const index = favorites.indexOf(productId);
+        if (index > -1) {
+            favorites.splice(index, 1);
+            showFavoriteToast('Eliminado de favoritos', 'info');
+        }
+    }
+    
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function showFavoriteToast(message, type) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+    
+    Toast.fire({
+        icon: type,
+        title: message
+    });
+}
+
+function loadFavorites() {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        const productId = btn.getAttribute('onclick').split("'")[1];
+        if (favorites.includes(productId)) {
+            btn.classList.add('active');
+            const heartIcon = btn.querySelector('i');
+            heartIcon.classList.remove('bi-heart');
+            heartIcon.classList.add('bi-heart-fill');
+        }
+    });
+}
+
+// Búsqueda en tiempo real
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const productItems = document.querySelectorAll('.producto-item');
+    
+    productItems.forEach(item => {
+        const productName = item.getAttribute('data-nombre');
+        if (productName.includes(searchTerm)) {
+            item.style.display = 'block';
+            item.querySelector('.product-card').classList.add('animate__fadeIn');
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+// Aplicar filtros avanzados
+function applyFilters() {
+    document.getElementById('filterForm').submit();
+}
+
+// Efecto de scroll suave
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Inicializar tooltips
+const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
 {% endblock %}
