@@ -25,13 +25,13 @@ urlpatterns = [
     path('bagueteria/', views.ProductoListView.as_view(), name='menu_bagueteria'),
     path('bagueteria/pedido/', views.PedidoCreateView.as_view(), name='nuevo_pedido'),
     path('bagueteria/pedido/<int:pk>/', views.PedidoDetailView.as_view(), name='detalle_pedido'),
+    path('carrito/', views.CarritoView.as_view(), name='carrito'),  # Vista del carrito
+    path('agregar_al_carrito/<int:producto_id>/', views.AgregarAlCarritoView.as_view(), name='agregar_al_carrito'), 
 
     # Ventura Market
     path('market/', views.ProductoMarketListView.as_view(), name='market'),
     path('producto/<int:pk>/', views.DetalleProductoView.as_view(), name='detalle_producto'),
-    # Home Build
-    path('construccion/', views.ProyectoConstruccionListView.as_view(), name='proyectos'),
-    path('construccion/detalle/<int:pk>/', views.ProyectoConstruccionDetailView.as_view(), name='detalle_proyecto'),
+
 
 
    #perfumeria 

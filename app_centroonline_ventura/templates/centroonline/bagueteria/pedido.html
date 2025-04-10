@@ -161,7 +161,7 @@
     </div>
     {% endif %}
     
-    <form method="post" action="{% url 'bagueteria:pedido' %}">
+    <form method="post" action="{% url 'carrito' %}">
         {% csrf_token %}
         
         {% if producto %}

@@ -54,7 +54,7 @@
     
     /* PRODUCT IMAGE */
     .product-img-container {
-        height: 100px; /* MUCHO MÁS CHICA */
+        height: 60px; /* Imagen más pequeña */
         overflow: hidden;
         border-bottom: 1px solid #eee;
     }
@@ -62,7 +62,7 @@
     .product-img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: cover; /* Mantener el aspecto sin deformar */
         transition: transform 0.3s ease-in-out;
     }
     
@@ -165,7 +165,7 @@
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star-half-alt"></i>
-                                    <span class="text-muted ms-2">(24)</span>
+                                    <span class="text-muted ms-2"></span>
                                 </div>
                                 <p class="product-price">${{ producto.precio }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
@@ -225,137 +225,10 @@
                 </ul>
             </nav>
             {% else %}
-            <div class="empty-state">
-                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No hay productos">
-                <h4>No se encontraron productos</h4>
-                <p class="text-muted">No hay productos que coincidan con tu búsqueda</p>
-                <a href="{% url 'estudio' %}" class="btn btn-primary mt-3">
-                    <i class="fas fa-undo me-2"></i>Ver todos los productos
-                </a>
-            </div>
+                <p>No se encontraron productos.</p>
             {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    // Función para añadir a lista de deseos
-    function addToWishlist(productId, productName) {
-        // Cambiar icono temporalmente para feedback visual
-        const heartIcon = event.currentTarget.querySelector('i');
-        heartIcon.classList.remove('far');
-        heartIcon.classList.add('fas');
-        
-        // Mostrar notificación
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Añadido a favoritos',
-            text: productName + ' se ha añadido a tu lista de deseos',
-            showConfirmButton: false,
-            timer: 1500,
-            toast: true
-        });
-        
-        // Aquí iría la lógica AJAX para guardar en la base de datos
-        // fetch(`/wishlist/add/${productId}/`)
-        //   .then(response => response.json())
-        //   .then(data => console.log(data));
-    }
-    
-    // Función para añadir al carrito
-    function addToCart(productId, productName) {
-        event.stopPropagation();
-        
-        Swal.fire({
-            title: '¿Añadir al carrito?',
-            text: `¿Deseas añadir "${productName}" a tu carrito de compras?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#4e73df',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, añadir',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Simular petición AJAX
-                setTimeout(() => {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Producto añadido',
-                        text: `${productName} se ha añadido al carrito`,
-                        showConfirmButton: false,
-                        timer: 1500,
-                        toast: true
-                    });
-                    
-                    // Actualizar contador del carrito
-                    updateCartCounter();
-                }, 500);
-            }
-        });
-    }
-    
-    // Función para actualizar contador del carrito
-    function updateCartCounter() {
-        const cartCounter = document.getElementById('cart-count');
-        if (cartCounter) {
-            const current = parseInt(cartCounter.textContent) || 0;
-            cartCounter.textContent = current + 1;
-        }
-    }
-    
-    // Mostrar alerta de bienvenida
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!sessionStorage.getItem('booksWelcomeShown')) {
-            Swal.fire({
-                title: 'Bienvenido a nuestra librería',
-                text: 'Descubre nuestros libros y productos de estudio con hasta 20% de descuento',
-                imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                imageWidth: 400,
-                imageAlt: 'Libros de estudio',
-                confirmButtonText: 'Explorar libros',
-                background: '#fff url(https://sweetalert2.github.io/images/trees.png)',
-                backdrop: `
-                    rgba(0,0,123,0.4)
-                    url("https://sweetalert2.github.io/images/nyan-cat.gif")
-                    left top
-                    no-repeat
-                `
-            });
-            sessionStorage.setItem('booksWelcomeShown', 'true');
-        }
-        
-        // Efecto de búsqueda (simulado)
-        const searchInput = document.querySelector('.search-input');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    Swal.fire({
-                        title: 'Búsqueda realizada',
-                        text: `Mostrando resultados para "${this.value}"`,
-                        icon: 'info',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-            
-            document.querySelector('.search-btn').addEventListener('click', function() {
-                Swal.fire({
-                    title: 'Búsqueda realizada',
-                    text: `Mostrando resultados para "${searchInput.value}"`,
-                    icon: 'info',
-                    confirmButtonText: 'OK'
-                });
-            });
-        }
-    });
-</script>
 {% endblock %}

@@ -119,7 +119,6 @@ from .forms import ReservaForm  # Asegúrate de tener este formulario
 class ReservarVehiculoView(FormView):
     template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
     form_class = ReservaForm
-    success_url = reverse_lazy('reserva_confirmada')  # Esta línea no se usa ya que la redirección personalizada la haremos
 
     def dispatch(self, request, *args, **kwargs):
         self.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['vehiculo_id'])
@@ -128,6 +127,7 @@ class ReservarVehiculoView(FormView):
     def form_valid(self, form):
         reserva = form.save(commit=False)
         reserva.vehiculo = self.vehiculo
+        
         reserva.save()
         return HttpResponseRedirect(reverse('reserva_confirmada', args=[self.vehiculo.pk]))
 
@@ -183,6 +183,21 @@ class PedidoDetailView(LoginRequiredMixin, DetailView):
 
 
 
+class CarritoView(View):
+    def get(self, request):
+        carrito_productos = request.session.get('carrito', [])
+        productos = Producto.objects.filter(id__in=carrito_productos)
+        
+        return render(request, 'centroonline/bagueteria/carrito.html', {'productos': productos})
+
+class AgregarAlCarritoView(View):
+    def post(self, request, producto_id):
+        carrito = request.session.get('carrito', [])
+        if producto_id not in carrito:
+            carrito.append(producto_id)
+            request.session['carrito'] = carrito  
+        return HttpResponseRedirect(reverse('bagueteria:carrito'))
+
 # Vistas para Ventura Market
 class ProductoMarketListView(ListView):
     model = ProductoMarket
@@ -196,15 +211,6 @@ class DetalleProductoView(DetailView):
 
 
 
-# Vistas para Home Build
-class ProyectoConstruccionListView(ListView):
-    model = ProyectoConstruccion
-    template_name = 'centroonline/construccion/proyectos.html'
-    context_object_name = 'proyectos'
-
-class ProyectoConstruccionDetailView(DetailView):
-    model = ProyectoConstruccion
-    template_name = 'centroonline/construccion/detalle_proyecto.html'
 
 
 

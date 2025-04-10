@@ -9,7 +9,6 @@ from .models import (
     Producto,
     Pedido,
     ProductoMarket,
-    ProyectoConstruccion,
     Perfumeria,
     ProductoEstudio,
     Viaje,
@@ -24,7 +23,6 @@ admin.site.register(TestDrive)
 admin.site.register(Producto)
 admin.site.register(Pedido)
 admin.site.register(ProductoMarket)
-admin.site.register(ProyectoConstruccion)
 admin.site.register(Perfumeria)
 admin.site.register(ProductoEstudio)
 admin.site.register(Viaje)

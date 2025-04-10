@@ -1,0 +1,19 @@
+<h2>Tu carrito de compras</h2>
+
+{% if productos %}
+    <ul>
+        {% for producto in productos %}
+            <li>
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="producto-img">
+                <div class="producto-details">
+                    <h3>{{ producto.nombre }}</h3>
+                    <p>{{ producto.descripcion }}</p>
+                    <div class="producto-precio">${{ producto.precio }}</div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'bagueteria:realizar_pedido' %}">Realizar pedido</a>
+{% else %}
+    <p>No hay productos en tu carrito.</p>
+{% endif %}
