@@ -16,19 +16,11 @@
                         {{ form.nombre.label_tag }}
                         {{ form.nombre }}
                     </div>
-                    <div class="col-md-6">
-                        {{ form.correo.label_tag }}
-                        {{ form.correo }}
-                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         {{ form.telefono.label_tag }}
                         {{ form.telefono }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.direccion.label_tag }}
-                        {{ form.direccion }}
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -40,10 +32,6 @@
                         {{ form.fecha_fin.label_tag }}
                         {{ form.fecha_fin }}
                     </div>
-                </div>
-                <div class="mb-3">
-                    {{ form.comentarios.label_tag }}
-                    {{ form.comentarios }}
                 </div>
                 <div class="d-flex justify-content-between">
                     <a href="{% url 'detalle_vehiculo' vehiculo.pk %}" class="btn btn-secondary">

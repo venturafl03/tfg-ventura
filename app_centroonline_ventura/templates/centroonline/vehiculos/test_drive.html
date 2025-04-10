@@ -10,7 +10,6 @@
                 <h4>Solicitar Prueba de Manejo - {{ vehiculo.marca }} {{ vehiculo.modelo }}</h4>
             </div>
             <div class="card-body">
-                <!-- Mostrar información de pruebas existentes para admin -->
                 {% if user.is_staff and pruebas %}
                 <div class="mb-4">
                     <h5 class="text-primary">Pruebas solicitadas para este vehículo:</h5>
