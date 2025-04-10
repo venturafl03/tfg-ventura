@@ -114,29 +114,47 @@ class TestDriveCreateView(LoginRequiredMixin, CreateView):
 from .forms import ReservaForm  # Asegúrate de tener este formulario
 
 class ReservarVehiculoView(FormView):
-    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
+    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'  # Template del formulario
     form_class = ReservaForm
+    success_url = reverse_lazy('listado')  # Redirige a la página de listado después de la reserva
 
     def dispatch(self, request, *args, **kwargs):
-        self.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['vehiculo_id'])
+        # Obtener el vehículo a reservar
+        self.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+        # Verificar si el vehículo ya está reservado
+        if self.vehiculo.reservado:
+            messages.error(self.request, 'Este vehículo ya está reservado.')
+            return redirect('listado')  # Redirige al listado si ya está reservado
+
+        # Guardar la reserva
         reserva = form.save(commit=False)
         reserva.vehiculo = self.vehiculo
-        
+        reserva.usuario = self.request.user
         reserva.save()
-        return HttpResponseRedirect(reverse('reserva_confirmada', args=[self.vehiculo.pk]))
+
+        # Actualizar el estado del vehículo
+        self.vehiculo.reservado = True
+        self.vehiculo.reservado_por = self.request.user
+        self.vehiculo.fecha_reserva = reserva.fecha_inicio
+        self.vehiculo.fecha_fin_reserva = reserva.fecha_fin
+        self.vehiculo.save()
+
+        # Mostrar mensaje de éxito
+        messages.success(self.request, f'¡Reserva realizada con éxito para {self.vehiculo.marca} {self.vehiculo.modelo}!')
+        return HttpResponseRedirect(self.success_url)  # Redirige a la página de listado
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['vehiculo'] = self.vehiculo
+        context['vehiculo'] = self.vehiculo  # Pasar el vehículo al contexto del template
         return context
-    
+
 
 class ReservaConfirmadaView(DetailView):
     model = Vehiculo
-    template_name = 'centroonline/vehiculos/reserva_confirmada.html'
+    template_name = 'centroonline/vehiculo/reserva_confirmada.html'
     context_object_name = 'vehiculo'
 
     def get_object(self):
