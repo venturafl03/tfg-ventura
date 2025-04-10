@@ -47,16 +47,12 @@ class Vehiculo(models.Model):
     descripcion = models.TextField()
     imagen_principal = models.ImageField(upload_to='vehiculos/')
     disponible = models.BooleanField(default=True)
-    fecha_ingreso = models.DateTimeField(default=timezone.now)
-    destacado = models.BooleanField(default=False)
     reservado = models.BooleanField(default=False)
     reservado_por = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
-    fecha_reserva = models.DateTimeField(null=True, blank=True)
     
 
     class Meta:
         verbose_name_plural = "Vehículos"
-        ordering = ['-fecha_ingreso']
 
     def __str__(self):
         return f"{self.marca} {self.modelo} {self.año}"

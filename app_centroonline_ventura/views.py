@@ -116,32 +116,26 @@ class TestDriveCreateView(LoginRequiredMixin, CreateView):
     
 from .forms import ReservaForm  # Asegúrate de tener este formulario
 
-class ReservarVehiculoView(LoginRequiredMixin, FormView):
+class ReservarVehiculoView(FormView):
     template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
     form_class = ReservaForm
-    success_url = reverse_lazy('listado')  # Ajusta según tu URL de éxito
+    success_url = reverse_lazy('reserva_confirmada')  # Esta línea no se usa ya que la redirección personalizada la haremos
+
+    def dispatch(self, request, *args, **kwargs):
+        self.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['vehiculo_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        reserva = form.save(commit=False)
+        reserva.vehiculo = self.vehiculo
+        reserva.save()
+        return HttpResponseRedirect(reverse('reserva_confirmada', args=[self.vehiculo.pk]))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['vehiculo_id'])
-        context['vehiculo'] = vehiculo
+        context['vehiculo'] = self.vehiculo
         return context
-
-    def form_valid(self, form):
-        vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['vehiculo_id'])
-        
-        # Crear la reserva
-        reserva = form.save(commit=False)
-        reserva.vehiculo = vehiculo
-        reserva.save()
-        
-        # Actualizar estado del vehículo
-        vehiculo.reservado = True
-        vehiculo.reservado_por = self.request.user
-        vehiculo.fecha_reserva = timezone.now()
-        vehiculo.save()
-        
-        return super().form_valid(form)
+    
 
 class ReservaConfirmadaView(DetailView):
     model = Vehiculo

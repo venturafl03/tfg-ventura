@@ -10,6 +10,41 @@
                 <h4>Solicitar Prueba de Manejo - {{ vehiculo.marca }} {{ vehiculo.modelo }}</h4>
             </div>
             <div class="card-body">
+                <!-- Mostrar información de pruebas existentes para admin -->
+                {% if user.is_staff and pruebas %}
+                <div class="mb-4">
+                    <h5 class="text-primary">Pruebas solicitadas para este vehículo:</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prueba in pruebas %}
+                                <tr>
+                                    <td>{{ prueba.fecha_test|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ prueba.cliente.get_full_name|default:prueba.cliente.username }}</td>
+                                    <td>{{ prueba.cliente.telefono|default:"-" }}</td>
+                                    <td>{{ prueba.cliente.email }}</td>
+                                    <td>
+                                        <span class="badge {% if prueba.estado == 'pendiente' %}bg-warning{% elif prueba.estado == 'confirmado' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ prueba.get_estado_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -27,7 +62,6 @@
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Solicitar Prueba</button>
-                        <!-- Enlace con href que redirige al listado -->
                         <a href="{% url 'listado' %}" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>
@@ -44,6 +78,10 @@
         const now = new Date();
         const minDate = now.toISOString().slice(0, 16);
         document.getElementById('id_fecha_test').min = minDate;
+
+        // Opcional: Configurar máximo 30 días en el futuro
+        const maxDate = new Date(now.setDate(now.getDate() + 30)).toISOString().slice(0, 16);
+        document.getElementById('id_fecha_test').max = maxDate;
     });
 </script>
 {% endblock %}
