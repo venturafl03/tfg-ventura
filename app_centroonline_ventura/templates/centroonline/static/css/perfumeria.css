@@ -1,0 +1,61 @@
+/* centroonline/static/css/perfumeria.css */
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.badge-gender {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
+
+.price-tag {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #d63384;
+}
+
+.stock-info {
+    font-size: 0.9rem;
+}
+
+.stock-high {
+    color: #198754;
+}
+
+.stock-low {
+    color: #fd7e14;
+}
+
+.stock-none {
+    color: #dc3545;
+}
+
+/* Estilos para el mensaje de productos no encontrados */
+.empty-state img {
+    width: 100px;
+    opacity: 0.7;
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    color: #6c757d;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}

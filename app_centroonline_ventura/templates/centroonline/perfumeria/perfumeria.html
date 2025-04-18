@@ -5,43 +5,11 @@
 {% block extra_head %}
 <!-- SweetAlert2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<style>
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
-    }
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .badge-gender {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 0.8rem;
-    }
-    .card-img-top {
-        height: 250px;
-        object-fit: cover;
-    }
-    .price-tag {
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #d63384;
-    }
-    .stock-info {
-        font-size: 0.9rem;
-    }
-    .stock-high {
-        color: #198754;
-    }
-    .stock-low {
-        color: #fd7e14;
-    }
-    .stock-none {
-        color: #dc3545;
-    }
-</style>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Nuestro CSS personalizado -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/perfumeria.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -106,8 +74,8 @@
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5">
-            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" style="width: 100px; opacity: 0.7;" class="mb-3">
+        <div class="col-12 text-center py-5 empty-state">
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" class="mb-3">
             <h4 class="text-muted">No se encontraron productos</h4>
             <p class="text-muted">Intenta con otros filtros o vuelve más tarde</p>
             <a href="{% url 'perfumeria' %}" class="btn btn-primary">Ver todos los productos</a>
@@ -118,8 +86,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Font Awesome para iconos -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -152,9 +118,6 @@
 
     // Función para añadir al carrito
     function addToCart(productId, productName) {
-        // Aquí iría tu lógica AJAX para añadir al carrito
-        // Por ahora simulamos la acción
-        
         Swal.fire({
             title: '¿Añadir al carrito?',
             text: `¿Deseas añadir "${productName}" a tu carrito?`,
@@ -166,7 +129,6 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Simulamos una petición AJAX
                 setTimeout(() => {
                     Swal.fire({
                         position: 'top-end',
@@ -177,18 +139,13 @@
                         timer: 1500,
                         toast: true
                     });
-                    
-                    // Actualizar el contador del carrito (necesitarías implementar esto)
                     updateCartCounter();
                 }, 500);
             }
         });
     }
 
-    // Función para actualizar el contador del carrito
     function updateCartCounter() {
-        // Esta función debería hacer una petición AJAX para obtener el número actual de items
-        // Por ahora simulamos incrementando un número aleatorio
         const cartCounter = document.getElementById('cart-counter');
         if (cartCounter) {
             const current = parseInt(cartCounter.textContent) || 0;
@@ -196,9 +153,7 @@
         }
     }
 
-    // Mostrar alerta de bienvenida al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-        // Solo mostrar si es la primera visita en esta sesión
         if (!sessionStorage.getItem('welcomeShown')) {
             Swal.fire({
                 title: 'Bienvenido a Perfumerías Ventu',
