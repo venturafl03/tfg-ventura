@@ -35,48 +35,7 @@ class RegistroView(CreateView):
 
 # Vistas para Ventura Motors
 
-class ReservaCreateView(LoginRequiredMixin, CreateView):
-    model = Reserva
-    form_class = ReservaForm
-    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['vehiculo'] = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
-        return context
-
-    def form_valid(self, form):
-        vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
-        
-        # Verificar solapamiento de fechas
-        reservas_existentes = Reserva.objects.filter(
-            vehiculo=vehiculo,
-            fecha_fin__gte=form.cleaned_data['fecha_inicio'],
-            fecha_inicio__lte=form.cleaned_data['fecha_fin']
-        ).exists()
-        
-        if reservas_existentes:
-            messages.error(self.request, 'El vehículo ya tiene reservas en esas fechas')
-            return self.form_invalid(form)
-            
-        reserva = form.save(commit=False)
-        reserva.vehiculo = vehiculo
-        reserva.usuario = self.request.user
-        reserva.save()
-        
-        # Actualizar estado del vehículo
-        vehiculo.reservado = True
-        vehiculo.reservado_por = self.request.user
-        vehiculo.fecha_reserva = timezone.now()
-        vehiculo.reserva_activa = reserva
-        vehiculo.save()
-        
-        messages.success(self.request, 'Reserva confirmada exitosamente')
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse_lazy('listado_vehiculos')
- 
 class LiberarVehiculoView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         """Solo permite acceso a usuarios staff"""
@@ -140,58 +99,56 @@ class VehiculoDetailView(DetailView):
         messages.success(request, f"¡El vehículo {vehiculo.marca} {vehiculo.modelo} ha sido reservado con éxito por {request.user.get_full_name()}.")
         
         return self.get(request, *args, **kwargs) 
-class TestDriveCreateView(LoginRequiredMixin, CreateView):
-    model = TestDrive
-    form_class = TestDriveForm
-    template_name = 'centroonline/vehiculos/test_drive.html'
-    success_url = reverse_lazy('listado')
-
-    def form_valid(self, form):
-        # Asegura que el usuario y el vehículo se asignen correctamente al formulario
-        form.instance.usuario = self.request.user
-        form.instance.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
-        return super().form_valid(form)
-    
+  
 from .forms import ReservaForm  # Asegúrate de tener este formulario
 
-class ReservarVehiculoView(FormView):
-    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'  # Template del formulario
+class ReservaCreateView(LoginRequiredMixin, CreateView):
+    model = Reserva
     form_class = ReservaForm
-    success_url = reverse_lazy('listado')  # Redirige a la página de listado después de la reserva
-
-    def dispatch(self, request, *args, **kwargs):
-        # Obtener el vehículo a reservar
-        self.vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        # Verificar si el vehículo ya está reservado
-        if self.vehiculo.reservado:
-            messages.error(self.request, 'Este vehículo ya está reservado.')
-            return redirect('listado')  # Redirige al listado si ya está reservado
-
-        # Guardar la reserva
-        reserva = form.save(commit=False)
-        reserva.vehiculo = self.vehiculo
-        reserva.usuario = self.request.user
-        reserva.save()
-
-        # Actualizar el estado del vehículo
-        self.vehiculo.reservado = True
-        self.vehiculo.reservado_por = self.request.user
-        self.vehiculo.fecha_reserva = reserva.fecha_inicio
-        self.vehiculo.fecha_fin_reserva = reserva.fecha_fin
-        self.vehiculo.save()
-
-        # Mostrar mensaje de éxito
-        messages.success(self.request, f'¡Reserva realizada con éxito para {self.vehiculo.marca} {self.vehiculo.modelo}!')
-        return HttpResponseRedirect(self.success_url)  # Redirige a la página de listado
+    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['vehiculo'] = self.vehiculo  # Pasar el vehículo al contexto del template
+        context['vehiculo'] = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
+        context['hoy'] = timezone.now().date()
         return context
 
+    def form_valid(self, form):
+        vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
+        
+        # Verificar si el vehículo ya está reservado
+        if vehiculo.reservado:
+            messages.error(self.request, 'Este vehículo ya está reservado.')
+            return self.form_invalid(form)
+            
+        # Verificar solapamiento de fechas
+        reservas_existentes = Reserva.objects.filter(
+            vehiculo=vehiculo,
+            fecha_fin__gte=form.cleaned_data['fecha_inicio'],
+            fecha_inicio__lte=form.cleaned_data['fecha_fin']
+        ).exists()
+        
+        if reservas_existentes:
+            messages.error(self.request, 'El vehículo ya tiene reservas en esas fechas')
+            return self.form_invalid(form)
+            
+        reserva = form.save(commit=False)
+        reserva.vehiculo = vehiculo
+        reserva.usuario = self.request.user
+        reserva.save()
+        
+        # Actualizar estado del vehículo
+        vehiculo.reservado = True
+        vehiculo.reservado_por = self.request.user
+        vehiculo.fecha_reserva = timezone.now()
+        vehiculo.reserva_activa = reserva
+        vehiculo.save()
+        
+        messages.success(self.request, 'Reserva confirmada exitosamente')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('listado')
 
 class ReservaConfirmadaView(DetailView):
     model = Vehiculo

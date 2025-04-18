@@ -39,12 +39,13 @@ class ReservaForm(forms.ModelForm):
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={
                 'type': 'date',
-                'min': timezone.now().date().isoformat(),
-                'class': 'form-control'
+                'class': 'form-control',
+                'min': timezone.now().date().isoformat()
             }),
             'fecha_fin': forms.DateInput(attrs={
                 'type': 'date',
-                'class': 'form-control'
+                'class': 'form-control',
+                'min': timezone.now().date().isoformat()
             }),
         }
 
@@ -60,7 +61,6 @@ class ReservaForm(forms.ModelForm):
                 raise forms.ValidationError("La fecha final debe ser posterior a la inicial")
         
         return cleaned_data
-
 
 class ViajeForm(forms.ModelForm):
     class Meta:
