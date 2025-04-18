@@ -50,6 +50,13 @@ class Vehiculo(models.Model):
     reservado = models.BooleanField(default=False)
     reservado_por = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
     fecha_reserva = models.DateTimeField(null=True, blank=True)
+    reserva_activa = models.OneToOneField(
+        'Reserva', 
+        null=True, 
+        blank=True, 
+        on_delete=models.SET_NULL,
+        related_name='vehiculo_asignado'
+    )
     
 
     class Meta:
@@ -76,9 +83,12 @@ class Reserva(models.Model):
         return f'Reserva de {self.nombre} para {self.vehiculo}'
     
     class Meta:
-        verbose_name = 'Reserva de vehículo'
-        verbose_name_plural = 'Reservas de vehículos'
-        ordering = ['-fecha_creacion']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['vehiculo', 'fecha_inicio', 'fecha_fin'],
+                name='reserva_unica_vehiculo'
+            )
+        ]
 
 
 class TestDrive(models.Model):

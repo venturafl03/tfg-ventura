@@ -35,20 +35,33 @@ class DetallePedidoForm(forms.ModelForm):
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-        fields = ['nombre', 'correo', 'telefono', 'direccion']
-
-
-class ReservaForm(forms.ModelForm):
-    class Meta:
-        model = Reserva
-        fields = ['nombre', 'correo', 'telefono', 'direccion', 'fecha_inicio', 'fecha_fin', 'comentarios']
-        
+        fields = ['nombre', 'telefono', 'fecha_inicio', 'fecha_fin']
         widgets = {
-            'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
-            'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
-            'comentarios': forms.Textarea(attrs={'rows': 3}),
+            'fecha_inicio': forms.DateInput(attrs={
+                'type': 'date',
+                'min': timezone.now().date().isoformat(),
+                'class': 'form-control'
+            }),
+            'fecha_fin': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
         
+        if fecha_inicio and fecha_fin:
+            if fecha_inicio < timezone.now().date():
+                raise forms.ValidationError("No se pueden seleccionar fechas pasadas")
+            if fecha_fin < fecha_inicio:
+                raise forms.ValidationError("La fecha final debe ser posterior a la inicial")
+        
+        return cleaned_data
+
+
 class ViajeForm(forms.ModelForm):
     class Meta:
         model = Viaje

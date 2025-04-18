@@ -40,31 +40,42 @@ class ReservaCreateView(LoginRequiredMixin, CreateView):
     form_class = ReservaForm
     template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vehiculo'] = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
+        return context
+
     def form_valid(self, form):
         vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
         
-        # Verificar si el vehículo ya está reservado
-        if vehiculo.reservado:
-            messages.error(self.request, 'Este vehículo ya está reservado')
-            return redirect('listado_vehiculos')
+        # Verificar solapamiento de fechas
+        reservas_existentes = Reserva.objects.filter(
+            vehiculo=vehiculo,
+            fecha_fin__gte=form.cleaned_data['fecha_inicio'],
+            fecha_inicio__lte=form.cleaned_data['fecha_fin']
+        ).exists()
         
-        # Asignar los datos de la reserva
-        form.instance.vehiculo = vehiculo
-        form.instance.usuario = self.request.user
+        if reservas_existentes:
+            messages.error(self.request, 'El vehículo ya tiene reservas en esas fechas')
+            return self.form_invalid(form)
+            
+        reserva = form.save(commit=False)
+        reserva.vehiculo = vehiculo
+        reserva.usuario = self.request.user
+        reserva.save()
         
         # Actualizar estado del vehículo
         vehiculo.reservado = True
         vehiculo.reservado_por = self.request.user
         vehiculo.fecha_reserva = timezone.now()
+        vehiculo.reserva_activa = reserva
         vehiculo.save()
         
-        messages.success(self.request, '¡Reserva confirmada con éxito!')
+        messages.success(self.request, 'Reserva confirmada exitosamente')
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('listado_vehiculos')
-
-
  
 class LiberarVehiculoView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
