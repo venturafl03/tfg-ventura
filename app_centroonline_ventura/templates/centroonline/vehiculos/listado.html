@@ -132,7 +132,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mantener reserva</button>
-                            <form method="post" action="{% url 'cancelar_reserva' vehiculo.pk %}">
+                            <form method="post" action="{% url 'liberar_vehiculo' vehiculo.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-warning">
                                     <i class="bi bi-x-circle"></i> Confirmar cancelación
