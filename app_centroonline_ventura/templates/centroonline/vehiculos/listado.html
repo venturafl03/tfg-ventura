@@ -25,7 +25,6 @@
         {% for vehiculo in vehiculos %}
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm {% if vehiculo.reservado %}border-warning{% else %}border-0{% endif %}">
-                <!-- Estado de reserva visible para todos -->
                 <div class="position-relative">
                     <img src="{{ vehiculo.imagen_principal.url }}" 
                          class="card-img-top img-fluid" 
@@ -65,28 +64,42 @@
                         </small>
                     </div>
                     
-                    <!-- Info de reserva visible - Punto 3 integrado aquí -->
+                    <!-- Información de reserva mejorada -->
                     {% if vehiculo.reservado %}
                     <div class="alert alert-warning py-2 mb-3">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-info-circle-fill me-2"></i>
                             <div>
-                                <small>
-                                    <strong>Reservado:</strong> 
-                                    Desde {{ vehiculo.fecha_reserva|date:"d/m/Y" }}
-                                    {% if reserva_activa %}
-                                    hasta {{ reserva_activa.fecha_fin|date:"d/m/Y" }}
-                                    {% endif %}
-                                </small>
-                                {% if user.is_staff %}
-                                <br>
-                                <small>
-                                    <strong>Cliente:</strong> 
-                                    {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}
-                                    {% if reserva_activa.telefono %}
-                                    · Tel: {{ reserva_activa.telefono }}
-                                    {% endif %}
-                                </small>
+                                {% if user == vehiculo.reservado_por %}
+                                    <small class="text-success">
+                                        <strong><i class="bi bi-person-check"></i> Reservado por ti</strong><br>
+                                        Desde {{ vehiculo.fecha_reserva|date:"d/m/Y" }}
+                                        {% if vehiculo.reserva_activa %}
+                                        hasta {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
+                                        {% endif %}
+                                    </small>
+                                {% elif user.is_staff %}
+                                    <small>
+                                        <strong>Reservado por:</strong> 
+                                        {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}<br>
+                                        Desde {{ vehiculo.fecha_reserva|date:"d/m/Y" }}
+                                        {% if vehiculo.reserva_activa %}
+                                        hasta {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
+                                        {% endif %}
+                                        {% if vehiculo.reserva_activa.telefono %}
+                                        <br>Tel: {{ vehiculo.reserva_activa.telefono }}
+                                        {% endif %}
+                                    </small>
+                                {% else %}
+                                    <small>
+                                        <strong>Vehículo reservado</strong><br>
+                                        Disponible a partir del 
+                                        {% if vehiculo.reserva_activa %}
+                                        {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
+                                        {% else %}
+                                        {{ vehiculo.fecha_reserva|date:"d/m/Y" }}
+                                        {% endif %}
+                                    </small>
                                 {% endif %}
                             </div>
                         </div>
@@ -103,7 +116,13 @@
                         
                         {% if user.is_authenticated %}
                             {% if vehiculo.reservado %}
-                                {% if user.is_staff %}
+                                {% if user == vehiculo.reservado_por %}
+                                <button class="btn btn-warning btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#cancelarModal{{ vehiculo.pk }}">
+                                    <i class="bi bi-x-circle"></i> Cancelar reserva
+                                </button>
+                                {% elif user.is_staff %}
                                 <button class="btn btn-warning btn-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#liberarModal{{ vehiculo.pk }}">
@@ -126,23 +145,53 @@
                 </div>
             </div>
             
+            <!-- Modal para cancelar reserva (solo para el usuario que reservó) -->
+            {% if user.is_authenticated and user == vehiculo.reservado_por %}
+            <div class="modal fade" id="cancelarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title">Cancelar reserva</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que quieres cancelar tu reserva?</p>
+                            <div class="alert alert-light">
+                                <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
+                                <strong>Periodo:</strong> {{ vehiculo.fecha_reserva|date:"d/m/Y" }} - {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mantener reserva</button>
+                            <form method="post" action="{% url 'cancelar_reserva' vehiculo.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-x-circle"></i> Confirmar cancelación
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Modal para liberar (solo staff) -->
             {% if user.is_staff and vehiculo.reservado %}
             <div class="modal fade" id="liberarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-warning">
-                            <h5 class="modal-title">Confirmar liberación</h5>
+                            <h5 class="modal-title">Liberar vehículo</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <p>¿Liberar este vehículo reservado?</p>
                             <div class="alert alert-light">
                                 <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
-                                <strong>Cliente:</strong> {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}<br>
-                                <strong>Periodo:</strong> {{ vehiculo.fecha_reserva|date:"d/m/Y" }} - {{ reserva_activa.fecha_fin|date:"d/m/Y" }}<br>
-                                {% if reserva_activa.telefono %}
-                                <strong>Teléfono:</strong> {{ reserva_activa.telefono }}
+                                <strong>Reservado por:</strong> {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}<br>
+                                <strong>Periodo:</strong> {{ vehiculo.fecha_reserva|date:"d/m/Y" }} - {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}<br>
+                                {% if vehiculo.reserva_activa.telefono %}
+                                <strong>Teléfono:</strong> {{ vehiculo.reserva_activa.telefono }}
                                 {% endif %}
                             </div>
                         </div>

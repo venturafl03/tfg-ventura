@@ -49,6 +49,7 @@ class Vehiculo(models.Model):
     disponible = models.BooleanField(default=True)
     reservado = models.BooleanField(default=False)
     reservado_por = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
+    fecha_reserva = models.DateTimeField(null=True, blank=True)
     
 
     class Meta:

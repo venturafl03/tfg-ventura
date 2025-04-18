@@ -35,6 +35,36 @@ class RegistroView(CreateView):
 
 # Vistas para Ventura Motors
 
+class ReservaCreateView(LoginRequiredMixin, CreateView):
+    model = Reserva
+    form_class = ReservaForm
+    template_name = 'centroonline/vehiculos/reservar_vehiculo.html'
+
+    def form_valid(self, form):
+        vehiculo = get_object_or_404(Vehiculo, pk=self.kwargs['pk'])
+        
+        # Verificar si el vehículo ya está reservado
+        if vehiculo.reservado:
+            messages.error(self.request, 'Este vehículo ya está reservado')
+            return redirect('listado_vehiculos')
+        
+        # Asignar los datos de la reserva
+        form.instance.vehiculo = vehiculo
+        form.instance.usuario = self.request.user
+        
+        # Actualizar estado del vehículo
+        vehiculo.reservado = True
+        vehiculo.reservado_por = self.request.user
+        vehiculo.fecha_reserva = timezone.now()
+        vehiculo.save()
+        
+        messages.success(self.request, '¡Reserva confirmada con éxito!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('listado_vehiculos')
+
+
  
 class LiberarVehiculoView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
