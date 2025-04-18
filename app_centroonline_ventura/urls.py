@@ -15,7 +15,6 @@ urlpatterns = [
     # Ventura Motors
     path('vehiculos/', views.VehiculoListView.as_view(), name='listado'),
     path('vehiculos/<int:pk>/', views.VehiculoDetailView.as_view(), name='detalle_vehiculo'),
-    path('vehiculos/<int:pk>/test-drive/', views.TestDriveCreateView.as_view(), name='test_drive'),
     path('reservar/<int:pk>/', views.ReservaCreateView.as_view(), name='reservar_vehiculo'),
     path('reserva_confirmada/<int:vehiculo_id>/', views.ReservaConfirmadaView.as_view(), name='reserva_confirmada'),
     path('vehiculos/reservados/', views.VehiculosReservadosListView.as_view(), name='vehiculos_reservados'),

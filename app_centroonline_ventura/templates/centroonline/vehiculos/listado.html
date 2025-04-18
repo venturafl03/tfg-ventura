@@ -26,13 +26,13 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm {% if vehiculo.reservado %}border-warning{% else %}border-0{% endif %}">
                 <div class="position-relative">
-                    <img src="{{ vehiculo.imagen_principal.url }}" 
-                         class="card-img-top img-fluid" 
+                    <img src="{{ vehiculo.imagen_principal.url }}"
+                         class="card-img-top img-fluid"
                          alt="{{ vehiculo.marca }} {{ vehiculo.modelo }}"
                          style="height: 200px; object-fit: cover;">
-                    
+
                     <!-- Badge de estado -->
-                    <span class="position-absolute top-0 start-0 m-2 badge 
+                    <span class="position-absolute top-0 start-0 m-2 badge
                                 {% if vehiculo.reservado %}bg-warning text-dark{% else %}bg-success{% endif %}">
                         {% if vehiculo.reservado %}
                         <i class="bi bi-lock-fill"></i> RESERVADO
@@ -40,7 +40,7 @@
                         <i class="bi bi-check-circle-fill"></i> DISPONIBLE
                         {% endif %}
                     </span>
-                    
+
                     {% if vehiculo.destacado %}
                     <span class="position-absolute top-0 end-0 m-2 badge bg-danger">
                         <i class="bi bi-star-fill"></i> DESTACADO
@@ -56,23 +56,23 @@
                         </h5>
                         <span class="badge bg-info">{{ vehiculo.get_tipo_display }}</span>
                     </div>
-                    
+
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="text-primary mb-0">${{ vehiculo.precio|floatformat:2 }}</h4>
                         <small class="text-muted">
                             <i class="bi bi-speedometer2"></i> {{ vehiculo.kilometraje }} km
                         </small>
                     </div>
-                    
-                    <!-- Información de reserva (nueva versión) -->
+
+                    <!-- Información de reserva -->
                     {% if vehiculo.reservado %}
                     <div class="alert alert-warning py-2 mb-3">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-info-circle-fill me-2"></i>
                             <div>
-                                {% if user == vehiculo.reservado_por %}
+                                {% if user == vehiculo.reservado_por or user.is_staff %}
                                     <small class="text-success">
-                                        <strong><i class="bi bi-person-check"></i> Tu reserva</strong><br>
+                                        <strong><i class="bi bi-person-check"></i> Reservado por: {{ vehiculo.reservado_por.username }}</strong><br>
                                         Del {{ vehiculo.reserva_activa.fecha_inicio|date:"d/m/Y" }} al {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
                                     </small>
                                 {% else %}
@@ -89,26 +89,33 @@
 
                 <div class="card-footer bg-white border-0 pt-0">
                     <div class="d-grid gap-2">
-                        <a href="{% url 'detalle_vehiculo' vehiculo.pk %}" 
+                        <a href="{% url 'detalle_vehiculo' vehiculo.pk %}"
                            class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-eye-fill"></i> Ver detalles
                         </a>
-                        
+
                         {% if not vehiculo.reservado %}
                         <a href="{% url 'reservar_vehiculo' vehiculo.pk %}" class="btn btn-primary btn-sm">
                             <i class="bi bi-bookmark-check-fill"></i> Reservar
                         </a>
-                        {% elif user == vehiculo.reservado_por %}
+                        {% elif user == vehiculo.reservado_por or user.is_staff %}
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#cancelarModal{{ vehiculo.pk }}">
                             <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        {% endif %}
+
+                        <!-- Botón para liberar vehículo (solo admin) -->
+                        {% if user.is_staff and vehiculo.reservado %}
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#liberarModal{{ vehiculo.pk }}">
+                            <i class="bi bi-unlock-fill"></i> Liberar
                         </button>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            
-            <!-- Modal para cancelar reserva (solo para el usuario que reservó) -->
-            {% if user.is_authenticated and user == vehiculo.reservado_por %}
+
+            <!-- Modal para cancelar reserva (solo para el usuario que reservó o admin) -->
+            {% if user.is_authenticated and (user == vehiculo.reservado_por or user.is_staff) %}
             <div class="modal fade" id="cancelarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -117,7 +124,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>¿Estás seguro de que quieres cancelar tu reserva?</p>
+                            <p>¿Estás seguro de que quieres cancelar esta reserva?</p>
                             <div class="alert alert-light">
                                 <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
                                 <strong>Periodo:</strong> {{ vehiculo.reserva_activa.fecha_inicio|date:"d/m/Y" }} - {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}
@@ -125,7 +132,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mantener reserva</button>
-                            <form method="post" action="{% url 'listado' vehiculo.pk %}">
+                            <form method="post" action="{% url 'cancelar_reserva' vehiculo.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-warning">
                                     <i class="bi bi-x-circle"></i> Confirmar cancelación
@@ -136,18 +143,18 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Modal para liberar (solo staff) -->
+
+            <!-- Modal para liberar vehículo (solo admin) -->
             {% if user.is_staff and vehiculo.reservado %}
             <div class="modal fade" id="liberarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header bg-warning">
+                        <div class="modal-header bg-danger">
                             <h5 class="modal-title">Liberar vehículo</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>¿Liberar este vehículo reservado?</p>
+                            <p>¿Estás seguro de que quieres liberar este vehículo?</p>
                             <div class="alert alert-light">
                                 <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
                                 <strong>Periodo:</strong> {{ vehiculo.reserva_activa.fecha_inicio|date:"d/m/Y" }} - {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}<br>
@@ -160,7 +167,7 @@
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <form method="post" action="{% url 'liberar_vehiculo' vehiculo.pk %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-warning">
+                                <button type="submit" class="btn btn-danger">
                                     <i class="bi bi-unlock-fill"></i> Confirmar liberación
                                 </button>
                             </form>
