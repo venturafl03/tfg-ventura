@@ -9,35 +9,84 @@
             <h3>Reservar {{ vehiculo.marca }} {{ vehiculo.modelo }}</h3>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" id="reservaForm">
                 {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> Por favor corrige los siguientes errores.
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        {{ form.nombre.label_tag }}
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
                         {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.nombre.errors.as_text }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
+                
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        {{ form.telefono.label_tag }}
+                        <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
                         {{ form.telefono }}
+                        {% if form.telefono.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.telefono.errors.as_text }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
+                
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        {{ form.fecha_inicio.label_tag }}
-                        {{ form.fecha_inicio }}
+                        <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">{{ form.fecha_inicio.label }}</label>
+                        <input type="date" 
+                               class="form-control {% if form.fecha_inicio.errors %}is-invalid{% endif %}" 
+                               id="{{ form.fecha_inicio.id_for_label }}" 
+                               name="{{ form.fecha_inicio.name }}" 
+                               value="{{ form.fecha_inicio.value|default_if_none:'' }}"
+                               min="{{ hoy|date:'Y-m-d' }}">
+                        {% if form.fecha_inicio.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.fecha_inicio.errors.as_text }}
+                            </div>
+                        {% endif %}
                     </div>
+                    
                     <div class="col-md-6">
-                        {{ form.fecha_fin.label_tag }}
-                        {{ form.fecha_fin }}
+                        <label for="{{ form.fecha_fin.id_for_label }}" class="form-label">{{ form.fecha_fin.label }}</label>
+                        <input type="date" 
+                               class="form-control {% if form.fecha_fin.errors %}is-invalid{% endif %}" 
+                               id="{{ form.fecha_fin.id_for_label }}" 
+                               name="{{ form.fecha_fin.name }}" 
+                               value="{{ form.fecha_fin.value|default_if_none:'' }}"
+                               min="{{ hoy|date:'Y-m-d' }}">
+                        {% if form.fecha_fin.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.fecha_fin.errors.as_text }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="d-flex justify-content-between">
+                
+                <div class="d-flex justify-content-between mt-4">
                     <a href="{% url 'listado' %}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Cancelar
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="confirmarBtn">
                         <i class="bi bi-check-circle"></i> Confirmar Reserva
                     </button>
                 </div>
@@ -45,4 +94,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('reservaForm');
+    const confirmarBtn = document.getElementById('confirmarBtn');
+    
+    form.addEventListener('submit', function(e) {
+        // Deshabilitar el botón para evitar múltiples clics
+        confirmarBtn.disabled = true;
+        confirmarBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
+        
+        // Validación adicional del lado del cliente
+        const fechaInicio = new Date(document.getElementById('{{ form.fecha_inicio.id_for_label }}').value);
+        const fechaFin = new Date(document.getElementById('{{ form.fecha_fin.id_for_label }}').value);
+        
+        if (fechaInicio > fechaFin) {
+            e.preventDefault();
+            alert('La fecha de fin no puede ser anterior a la fecha de inicio');
+            confirmarBtn.disabled = false;
+            confirmarBtn.innerHTML = '<i class="bi bi-check-circle"></i> Confirmar Reserva';
+        }
+    });
+});
+</script>
 {% endblock %}

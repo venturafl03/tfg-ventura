@@ -115,7 +115,7 @@
             </div>
 
             <!-- Modal para cancelar reserva (solo para el usuario que reservó o admin) -->
-            {% if user.is_authenticated and (user == vehiculo.reservado_por or user.is_staff) %}
+            {% if user.is_authenticated and user == vehiculo.reservado_por or user.is_staff %}
             <div class="modal fade" id="cancelarModal{{ vehiculo.pk }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
