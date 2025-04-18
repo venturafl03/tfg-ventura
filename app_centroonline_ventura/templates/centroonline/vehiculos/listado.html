@@ -125,7 +125,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mantener reserva</button>
-                            <form method="post" action="{% url 'listado'%}">
+                            <form method="post" action="{% url 'listado' vehiculo.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-warning">
                                     <i class="bi bi-x-circle"></i> Confirmar cancelación
@@ -150,7 +150,6 @@
                             <p>¿Liberar este vehículo reservado?</p>
                             <div class="alert alert-light">
                                 <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
-                                <strong>Reservado por:</strong> {{ vehiculo.reservado_por.get_full_name|default:vehiculo.reservado_por.username }}<br>
                                 <strong>Periodo:</strong> {{ vehiculo.reserva_activa.fecha_inicio|date:"d/m/Y" }} - {{ vehiculo.reserva_activa.fecha_fin|date:"d/m/Y" }}<br>
                                 {% if vehiculo.reserva_activa.telefono %}
                                 <strong>Teléfono:</strong> {{ vehiculo.reserva_activa.telefono }}
