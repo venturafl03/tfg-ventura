@@ -119,7 +119,7 @@ class ReservaCreateView(LoginRequiredMixin, CreateView):
         # Verificar si el vehículo ya está reservado
         if vehiculo.reservado:
             messages.error(self.request, 'Este vehículo ya está reservado.')
-            return self.form_invalid(form)
+            return redirect(reverse('reservar_vehiculo', kwargs={'pk': vehiculo.pk}))
             
         # Verificar solapamiento de fechas
         reservas_existentes = Reserva.objects.filter(
@@ -130,7 +130,7 @@ class ReservaCreateView(LoginRequiredMixin, CreateView):
         
         if reservas_existentes:
             messages.error(self.request, 'El vehículo ya tiene reservas en esas fechas')
-            return self.form_invalid(form)
+            return redirect(reverse('reservar_vehiculo', kwargs={'pk': vehiculo.pk}))
             
         reserva = form.save(commit=False)
         reserva.vehiculo = vehiculo
@@ -144,11 +144,8 @@ class ReservaCreateView(LoginRequiredMixin, CreateView):
         vehiculo.reserva_activa = reserva
         vehiculo.save()
         
-        messages.success(self.request, 'Reserva confirmada exitosamente')
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse('listado')
+        messages.success(self.request, f'Reserva confirmada para {vehiculo.marca} {vehiculo.modelo} del {reserva.fecha_inicio} al {reserva.fecha_fin}')
+        return redirect('listado')
 
 class ReservaConfirmadaView(DetailView):
     model = Vehiculo
